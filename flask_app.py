@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 # CORS(app)
 
 def get_db_connection():
@@ -17,7 +18,18 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return "Hello, World!"
+    conn = get_db_connection()
+    db_notes = conn.execute('SELECT id, created, content FROM notes;').fetchall()
+    conn.close()
+
+    notes = []
+    for note in db_notes:
+        note = dict(note)
+        note['content'] = markdown.markdown(note['content'])
+        notes.append(note)
+
+    # index.html from Myblog_frontend 
+    return render_template('~/Myblog_frontend/templates/index.html', notes=notes)
 
 if __name__ == '__main__':
     app.run(debug=True)
