@@ -1,23 +1,23 @@
 import os
-from flask import Flask
+import sqlite3
+import markdown
+from flask import Flask, render_template, request, flash, redirect, url_for
 # from flask_cors import CORS
-# from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
 # CORS(app)
-# mysql = MySQL(app)
 
-# app.config['MYSQL_USER'] = os.getenv("MYSQL_USER")
-# app.config['MYSQL_PASSWORD'] = os.getenv("MYSQL_PASSWORD")
-# app.config['MYSQL_HOST'] = os.getenv("MYSQL_HOST")
-# app.config['MYSQL_DB'] = os.getenv("MYSQL_DB")
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row()
+    return conn
 
 @app.route('/')
 def index():
     return "Hello, World!"
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
