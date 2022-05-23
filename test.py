@@ -1,5 +1,6 @@
 import unittest
 from flask_app import *
+from flask_testing import TestCase
 
 class DBTest(unittest.TestCase):
 
@@ -34,6 +35,20 @@ class DBTest(unittest.TestCase):
         
         # If this test case failed, the python compiler found right sqlite3 database at '~/Myblog_backend/database.db'
         self.assertEqual("unable to open database file", context.exception.__str__())
+
+
+# class FetchingFrontend(TestCase):
+
+#     @app.route('/')
+#     def test_make_page(self):
+#         client = Flask(__name__, template_folder='Myblog_frontend/templates')
+#         render_template('index.html', notes=[])
+
+#     def test_get_template_from_another_directory(self):
+#         response = self.client.get('/')
+
+#         self.assert_template_used('index.html')
+
 
 
 class ServerTest(unittest.TestCase):

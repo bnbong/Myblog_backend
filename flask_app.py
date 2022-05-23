@@ -1,16 +1,15 @@
 import os
-import sys
 import sqlite3
 import markdown
 from flask import Flask, render_template, request, flash, redirect, url_for
 # from flask_cors import CORS
 from dotenv import load_dotenv
 
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+template_dir = os.path.abspath('../Myblog_frontend/templates')
 
 load_dotenv()
 
-app = Flask(__name__, template_folder='Myblog_frontend/templates')
+app = Flask(__name__, template_folder=template_dir)
 # app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 # CORS(app)
 
