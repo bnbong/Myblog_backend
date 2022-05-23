@@ -19,8 +19,18 @@ class DBTest(unittest.TestCase):
             note['content'] = markdown.markdown(note['content'])
             notes.append(note)
 
-        print(notes)
-    
+        assert notes is not None
+
+    def test_could_not_get_db_connection(self):
+        with self.assertRaises(sqlite3.OperationalError) as context:
+            conn2 = sqlite3.connect('~/database.db')
+            conn2.row_factory = sqlite3.Row
+            db_notes2 = conn2.execute('SELECT id, created, content FROM notes;').fetchall()
+            conn2.close()
+        
+        # If this test case failed, the python compiler found right sqlite3 database at '~/Myblog_backend/database.db'
+        self.assertEqual("unable to open database file", context.exception.__str__())
+
 
 class ServerTest(unittest.TestCase):
     pass
