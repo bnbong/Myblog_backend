@@ -33,5 +33,21 @@ def index():
     # index.html from Myblog_frontend
     return render_template('index.html', notes=notes)
 
+@app.route('/create/', methods=('GET', 'POST'))
+def create():
+    conn = get_db_connection()
+
+    if request.methods == 'POST':
+        content = request.form['content']
+        if not content:
+            flash('Content is required!')
+            return redirect(url_for('index'))
+        conn.execute('INSERT INTO notes (content) VALUES (?)', (content,))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+    
+    return render_template('create.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
