@@ -7,11 +7,10 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 from dotenv import load_dotenv
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from Myblog_frontend.flask_render_page import *
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='Myblog_frontend/templates')
 # app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 # CORS(app)
 
@@ -33,7 +32,7 @@ def index():
         notes.append(note)
 
     # index.html from Myblog_frontend
-    render_mainpage(notes)
+    return render_template('index.html', notes=notes)
 
 if __name__ == '__main__':
     app.run(debug=True)
