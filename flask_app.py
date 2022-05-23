@@ -28,7 +28,6 @@ def index():
         note['content'] = markdown.markdown(note['content'])
         notes.append(note)
 
-    # index.html from Myblog_frontend
     # return (f"{note['id'], note['created']}")
     return notes
 
