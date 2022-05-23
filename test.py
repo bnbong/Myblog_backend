@@ -1,6 +1,6 @@
 import unittest
 from flask_app import *
-from flask_testing import TestCase
+# from flask_testing import TestCase
 
 class DBTest(unittest.TestCase):
 
