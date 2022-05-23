@@ -1,9 +1,13 @@
 import os
+import sys
 import sqlite3
 import markdown
 from flask import Flask, render_template, request, flash, redirect, url_for
 # from flask_cors import CORS
 from dotenv import load_dotenv
+
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from Myblog_frontend.flask_render_page import *
 
 load_dotenv()
 
@@ -28,8 +32,9 @@ def index():
         note['content'] = markdown.markdown(note['content'])
         notes.append(note)
 
-    # return (f"{note['id'], note['created']}")
-    return notes
+    # index.html from Myblog_frontend
+    # return render_template('index.html', notes=notes)
+    render_mainpage(notes)
 
 if __name__ == '__main__':
     app.run(debug=True)
