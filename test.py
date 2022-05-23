@@ -9,17 +9,21 @@ class DBTest(unittest.TestCase):
         conn.close()
         self.db_notes = db_notes
 
-    def test_db_connection(self):
+        self.notes = []
+        for self.note in self.db_notes:
+            self.note = dict(self.note)
+            self.note['content'] = markdown.markdown(self.note['content'])
+            self.notes.append(self.note)
+
+    def test_could_db_connection(self):
         assert self.db_notes is not None
 
-    def test_get_db_indexes(self):
-        notes = []
-        for note in self.db_notes:
-            note = dict(note)
-            note['content'] = markdown.markdown(note['content'])
-            notes.append(note)
+    def test_could_get_right_db_indexes(self):
+        assert self.notes is not None
 
-        assert notes is not None
+        self.assertEqual(1, (self.notes[0])['id'])
+        self.assertEqual(2, (self.notes[1])['id'])
+        self.assertEqual(3, (self.notes[2])['id'])
 
     def test_could_not_get_db_connection(self):
         with self.assertRaises(sqlite3.OperationalError) as context:

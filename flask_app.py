@@ -33,7 +33,6 @@ def index():
         notes.append(note)
 
     # index.html from Myblog_frontend
-    # return render_template('index.html', notes=notes)
     render_mainpage(notes)
 
 if __name__ == '__main__':
