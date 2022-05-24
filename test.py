@@ -2,7 +2,7 @@ import unittest
 from flask_app import *
 # from flask_testing import TestCase
 
-class DBTest(unittest.TestCase):
+class Fetching_DBTest(unittest.TestCase):
 
     def setUp(self):
         conn = get_db_connection()
@@ -35,6 +35,59 @@ class DBTest(unittest.TestCase):
         
         # If this test case failed, the python compiler found right sqlite3 database at '~/Myblog_backend/database.db'
         self.assertEqual("unable to open database file", context.exception.__str__())
+
+
+class Modify_DBTEST(unittest.TestCase):
+
+    def setUp(self):
+        conn = get_db_connection()
+        db_notes = conn.execute('SELECT id, created, content FROM notes;').fetchall()
+        conn.close()
+        self.db_notes = db_notes
+
+        self.notes = []
+        for self.note in self.db_notes:
+            self.note = dict(self.note)
+            self.note['content'] = markdown.markdown(self.note['content'])
+            self.notes.append(self.note)
+
+    def test_could_change_DB_instance(self):
+        self.another_conn = get_db_connection()
+        another_id_from_db = self.another_conn.execute('SELECT id FROM notes WHERE id = 2;').fetchone()['id']
+
+        self.assertEqual(2, (self.notes[1])['id'])
+        self.assertEqual(2, another_id_from_db)
+        self.assertEqual('<p><em>Another note</em></p>', (self.notes[1])['content'])
+
+        new_content = 'Hello World!'
+
+        self.another_conn.execute('UPDATE notes SET content = ? WHERE id = ?', (new_content, another_id_from_db))
+        another_item = self.another_conn.execute('SELECT id, created, content FROM notes WHERE id = 2;').fetchall()
+        self.another_conn.close()
+
+        self.assertEqual('Hello World!', (another_item[0])['content'])
+        self.assertNotEqual((self.notes[1])['content'], (another_item[0])['content'])
+        
+    def test_could_delete_DB_instance(self):
+        self.another_conn_2 = get_db_connection()
+        another_id_from_db_2 = self.another_conn_2.execute('SELECT id FROM notes WHERE id = 3;').fetchone()['id']
+
+        self.assertEqual(3, (self.notes[2])['id'])
+        self.assertEqual('<p>Visit <a href="https://www.digitalocean.com/community/tutorials">this page</a> for more tutorials.</p>',
+         (self.notes[2])['content'])
+
+        self.another_conn_2.execute('DELETE FROM notes WHERE id = ?;', (another_id_from_db_2,))
+
+        another_db_notes = self.another_conn_2.execute('SELECT id, created, content FROM notes;').fetchall()
+        another_notes = []
+        for note in another_db_notes:
+            note = dict(note)
+            another_notes.append(note)
+            
+        self.assertEqual(2, len(another_notes))
+        self.assertNotEqual('<p>Visit <a href="https://www.digitalocean.com/community/tutorials">this page</a> for more tutorials.</p>',
+         (another_notes[-1])['content'])
+        self.assertEqual('_Another note_', (another_notes[-1])['content'])
 
 
 # class FetchingFrontend(TestCase):

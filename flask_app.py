@@ -49,5 +49,13 @@ def create():
     
     return render_template('create.html')
 
+# @app.route('/<int:id>/edit', methods=('GET', 'POST'))
+# def edit(id):
+#     pass
+
+# @app.route('/<int:id>/delete/', methods=('POST',))
+# def delete(id):
+#     pass
+
 if __name__ == '__main__':
     app.run(debug=True)
