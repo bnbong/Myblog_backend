@@ -10,7 +10,7 @@ template_dir = os.path.abspath('../Myblog_frontend/templates')
 load_dotenv()
 
 app = Flask(__name__, template_folder=template_dir)
-# app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 # CORS(app)
 
 def get_db_connection():
