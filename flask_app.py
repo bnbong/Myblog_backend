@@ -37,7 +37,7 @@ def index():
 def create():
     conn = get_db_connection()
 
-    if request.methods == 'POST':
+    if request.method == 'POST':
         content = request.form['content']
         if not content:
             flash('Content is required!')
