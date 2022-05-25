@@ -21,7 +21,7 @@ def get_db_connection():
 @app.route('/')
 def index():
     conn = get_db_connection()
-    db_notes = conn.execute('SELECT id, created, content FROM notes;').fetchall()
+    db_notes = conn.execute('SELECT id, title, created, content FROM notes;').fetchall()
     conn.close()
 
     notes = []
@@ -38,11 +38,18 @@ def create():
     conn = get_db_connection()
 
     if request.method == 'POST':
+        title = request.form['title']
         content = request.form['content']
+
+        if not title:
+            flash('Title is required!')
+            return redirect(url_for('index'))
+
         if not content:
             flash('Content is required!')
             return redirect(url_for('index'))
-        conn.execute('INSERT INTO notes (content) VALUES (?)', (content,))
+            
+        conn.execute('INSERT INTO notes (title, content) VALUES (?)', (title, content,))
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
