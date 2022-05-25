@@ -48,8 +48,8 @@ def create():
         if not content:
             flash('Content is required!')
             return redirect(url_for('index'))
-            
-        conn.execute('INSERT INTO notes (title, content) VALUES (?)', (title, content,))
+
+        conn.execute('INSERT INTO notes (title, content) VALUES (?, ?)', (title, content,))
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
