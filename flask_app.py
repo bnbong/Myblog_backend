@@ -31,7 +31,8 @@ def index():
         notes.append(note)
 
     # index.html from Myblog_frontend
-    return render_template('index.html', notes=notes)
+    # return render_template('index.html', notes=notes)
+    return render_template('index.html')
 
 @app.route('/create/', methods=('GET', 'POST'))
 def create():
