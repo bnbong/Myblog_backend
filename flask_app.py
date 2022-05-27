@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 # from flask_cors import CORS
 from dotenv import load_dotenv
 
-template_dir = os.path.abspath('../Myblog_frontend/templates_2')
+template_dir = os.path.abspath('../Myblog_frontend/templates')
 static_dir = os.path.abspath('../Myblog_frontend/static')
 
 load_dotenv()
