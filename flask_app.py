@@ -6,10 +6,11 @@ from flask import Flask, render_template, request, flash, redirect, url_for
 from dotenv import load_dotenv
 
 template_dir = os.path.abspath('../Myblog_frontend/templates_2')
+static_dir = os.path.abspath('../Myblog_frontend/static')
 
 load_dotenv()
 
-app = Flask(__name__, template_folder=template_dir)
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 # CORS(app)
 
