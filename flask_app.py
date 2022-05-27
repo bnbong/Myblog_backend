@@ -30,13 +30,13 @@ def index():
         note = dict(note)
         note['content'] = markdown.markdown(note['content'])
         notes.append(note)
-    # for setting newest post to the front.
-    notes = notes.reverse()
+    # # for setting newest post to the front.
+    # notes = notes.reverse()
 
     # index.html from Myblog_frontend
     return render_template('index.html', notes=notes)
 
-@app.route('/aboutme/', methods=('GET'))
+@app.route('/aboutme')
 def aboutme():
     return render_template('aboutme.html')
 
@@ -60,7 +60,7 @@ def create():
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
-    
+
     return render_template('create.html')
 
 # @app.route('/<int:id>/edit', methods=('GET', 'POST'))
