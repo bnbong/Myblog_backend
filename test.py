@@ -21,6 +21,7 @@ class Fetching_notes_DBTest(unittest.TestCase):
 
     def test_could_get_right_db_indexes(self):
         assert self.notes is not None
+        print(self.notes)
 
         self.assertEqual(1, (self.notes[0])['id'])
         self.assertEqual(2, (self.notes[1])['id'])
@@ -37,7 +38,7 @@ class Fetching_notes_DBTest(unittest.TestCase):
         self.assertEqual("unable to open database file", context.exception.__str__())
 
 
-class Modify_notes_DBTEST(unittest.TestCase):
+class Modify_notes_DBTest(unittest.TestCase):
 
     def setUp(self):
         conn = get_db_connection()
@@ -50,7 +51,34 @@ class Modify_notes_DBTEST(unittest.TestCase):
             self.note = dict(self.note)
             self.note['content'] = markdown.markdown(self.note['content'])
             self.notes.append(self.note)
-    
+
+    def test_could_insert_aboutme_to_DB(self):
+        from datetime import datetime
+
+        title = "About Me"
+        content = """
+    ![header](https://capsule-render.vercel.app/api?type=waving&color=timeGradient&height=300&section=header&text=JunHyeok%20Lee&fontSize=90&animation=fadeIn)
+
+![Most Used Language](https://github-readme-stats.vercel.app/api/top-langs/?username=bnbong)
+
+## 👋 Hello world!
+
+ - 한양대학교 ERICA 소프트웨어학부 19학번 (2019.03.02 ~ )
+ - 대한민국 공군 ROKAF 병 825기 정보체계관리(30010 과정) (2021.04.12 ~ 2023.01.11)
+ - GiftMusic backend 개발자 (2020.09 ~ 2021.04)
+        """
+        date, time = (datetime.today().isoformat(timespec='seconds')).split('T')
+        time_now = f'{date} {time}'
+        self.notes.append(
+            {"id":4, 
+            "title":"About Me", 
+            "created":time_now, 
+            "content":content}
+            )
+        
+        self.assertEqual(self.notes.__len__(), 4)
+        self.assertEqual(self.notes[3].get('title'), "About Me")
+        
     def test_could_change_note_title(self):
         pass
 
