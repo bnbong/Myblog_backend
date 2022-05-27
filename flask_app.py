@@ -51,7 +51,7 @@ def aboutme():
         {"id":4, 
         "title":"About Me", 
         "created":time_now, 
-        "content":content}
+        "content":markdown.markdown(content)}
         )
         
     return render_template('index.html', notes=notes)
