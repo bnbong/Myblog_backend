@@ -47,7 +47,7 @@ def aboutme():
     notes = []
     date, time = (datetime.today().isoformat(timespec='seconds')).split('T')
     time_now = f'{date} {time}'
-    self.notes.append(
+    notes.append(
         {"id":4, 
         "title":"About Me", 
         "created":time_now, 
