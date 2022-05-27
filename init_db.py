@@ -1,3 +1,5 @@
+# init test data for example view
+
 import sqlite3
 
 connection = sqlite3.connect('database.db')
