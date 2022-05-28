@@ -48,7 +48,7 @@ def aboutme():
 @app.route('/posts/<post_id>')
 def postview(post_id):
     notes = get_notes()
-    post_id = int(post_id)
+    post_id = int(post_id) - 1
     selected_note = notes[post_id]
 
     return render_template('postview.html', note=selected_note)
