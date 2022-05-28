@@ -60,7 +60,7 @@ def aboutme():
         
     return render_template('index.html', notes=notes)
 
-@app.route('/posts/<post_id>')
+@app.route('/posts/<int:post_id>')
 def postview(post_id):
     notes = get_notes()
     selected_note = notes['post_id']
