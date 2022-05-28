@@ -52,18 +52,19 @@ def aboutme():
     date, time = (datetime.today().isoformat(timespec='seconds')).split('T')
     time_now = f'{date} {time}'
     notes.append(
-        {"id":4, 
-        "title":"About Me", 
-        "created":time_now, 
+        {"id":4,
+        "title":"About Me",
+        "created":time_now,
         "content":markdown.markdown(content)}
         )
-        
+
     return render_template('index.html', notes=notes)
 
-@app.route('/posts/<int:post_id>')
+@app.route('/posts/<post_id>')
 def postview(post_id):
     notes = get_notes()
-    selected_note = notes['post_id']
+    post_id = int(post_id)
+    selected_note = notes[post_id]
 
     return render_template('postview.html', note=selected_note)
 
