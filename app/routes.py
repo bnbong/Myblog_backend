@@ -31,13 +31,13 @@ def get_notes():
 
 def get_posts():
     posts = Post.query.order_by(Post.created.desc()).all()
-    
+
     return posts
 
 @app.route('/')
 def index():
     posts = get_posts()
-    
+
     return render_template('index.html', posts=posts)
 
 @app.route('/aboutme')
@@ -49,7 +49,7 @@ def aboutme():
 @app.route('/posts/<post_id>')
 def postview(post_id):
     posts = get_posts()
-    post_id = int(post_id) - 1
+    post_id = int(post_id)
     selected_post = Post.query.filter_by(id=post_id).first()
 
     return render_template('postview.html', post=selected_post)
