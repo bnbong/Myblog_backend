@@ -1,6 +1,14 @@
 import unittest
-from flask_app import *
+# from flask_app import *
+from app.routes import *
 
+
+class Dotenv_Test(unittest.TestCase):
+    
+    def test_could_load_SECRET_KEY_from_env(self):
+        from config import Config
+
+        self.assertEqual('10308431c9df4dca98a308187f0c6b74', app.config['SECRET_KEY'])
 
 class Markdown_Test(unittest.TestCase):
 
@@ -104,6 +112,19 @@ class Markdown_Test(unittest.TestCase):
 <img src="https://img.shields.io/badge/Android%20Studio-FFFFFF?style=flat-square&logo=Android%20Studio"/>
 </div>''', converted_text)
 
+
+class Paginate_Test(unittest.TestCase):
+    
+    def setUp(self):
+        self.notes = get_notes()
+        self.conn = get_db_connection()
+
+    def test_could_be_object_be_quaried(self):
+        # notes = self.notes.query
+        # notes = self.conn.query
+        # print(notes)
+        pass
+
 class Fetching_notes_DBTest(unittest.TestCase):
 
     def setUp(self):
@@ -123,7 +144,6 @@ class Fetching_notes_DBTest(unittest.TestCase):
 
     def test_could_get_right_db_indexes(self):
         assert self.notes is not None
-        print(self.notes)
 
         self.assertEqual(1, (self.notes[0])['id'])
         self.assertEqual(2, (self.notes[1])['id'])
@@ -131,7 +151,7 @@ class Fetching_notes_DBTest(unittest.TestCase):
 
     def test_could_not_get_db_connection(self):
         with self.assertRaises(sqlite3.OperationalError) as context:
-            conn2 = sqlite3.connect('~/database.db')
+            conn2 = sqlite3.connect('~/app.db')
             conn2.row_factory = sqlite3.Row
             db_notes2 = conn2.execute('SELECT id, title, created, content FROM notes;').fetchall()
             conn2.close()
@@ -178,7 +198,7 @@ class Modify_notes_DBTest(unittest.TestCase):
             "content":content}
             )
         
-        self.assertEqual(self.notes.__len__(), 4)
+        self.assertEqual(self.notes.__len__(), 5)
         self.assertEqual(self.notes[3].get('title'), "About Me")
         
     def test_could_change_note_title(self):
@@ -217,10 +237,10 @@ class Modify_notes_DBTest(unittest.TestCase):
             note = dict(note)
             another_notes.append(note)
             
-        self.assertEqual(2, len(another_notes))
+        self.assertEqual(3, len(another_notes))
         self.assertNotEqual('<p>Visit <a href="https://www.digitalocean.com/community/tutorials">this page</a> for more tutorials.</p>',
          (another_notes[-1])['content'])
-        self.assertEqual('Another note', (another_notes[-1])['title'])
+        self.assertEqual('Another note', (another_notes[-2])['title'])
 
 
 class Fetching_comment_DBTEST(unittest.TestCase):

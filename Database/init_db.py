@@ -2,7 +2,7 @@
 
 import sqlite3
 
-connection = sqlite3.connect('database.db')
+connection = sqlite3.connect('app.db')
 
 
 with open('schema.sql') as f:

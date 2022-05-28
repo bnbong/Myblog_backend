@@ -9,8 +9,22 @@ backend-side of blog project wriiten with Python Flask
 ## venv deactivate
  > deactivate
 
+## app.db init
+ > flask db init
+
+## db migration
+ > flask db migrate
+ > flask db migrate -m "write your description"
+
+## db upgrade
+ > flask db upgrade
+
+## db downgrade
+ > flask db downgrade (it will undo your last migration)
+
 ## initial db setting
- > python init_db.py
+ > python Database/init_db.py
+ 
 ## install .dotenv file requirements
  > pip freeze -r "requirements.txt"
 
