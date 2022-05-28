@@ -89,9 +89,11 @@ cur.execute("INSERT INTO notes (title, content) VALUES (?, ?)", ('About Me', '''
 ## 📫 How to reach me ...
 
  - MY WEBSITE :
- <div>
-  <a href="https://bnbongdevstory.tistory.com/"><img src="https://img.shields.io/badge/website-000000?style=flat-square&logo=About.me&logoColor=white"/></a>&nbsp
- </div>
+<div>
+  <a href="https://github.com/bnbong/"><img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub"/></a>&nbsp
+  <a href="https://bnbongdevstory.tistory.com/"><img src="https://img.shields.io/badge/my tistory-000000?style=flat-square&logo=About.me&logoColor=white"/></a>&nbsp
+  <a href="https://bnbong.pythonanywhere.com/"><img src="https://img.shields.io/badge/my website-000000?style=flat-square&logo=About.me&logoColor=white"/></a>&nbsp
+</div>
 
  - EMAIL ME : 
 <div>
