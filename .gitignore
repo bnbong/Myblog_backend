@@ -129,5 +129,7 @@ dmypy.json
 .pyre/
 
 # database
-database.db
+*.db
 app.db
+database.db
+Database/app.db
