@@ -19,8 +19,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-@app.route('/')
-def index():
+def get_notes():
     conn = get_db_connection()
     db_notes = conn.execute('SELECT id, title, created, content FROM notes;').fetchall()
     conn.close()
@@ -30,6 +29,11 @@ def index():
         note = dict(note)
         note['content'] = markdown.markdown(note['content'])
         notes.append(note)
+    return notes
+
+@app.route('/')
+def index():
+    notes = get_notes()
     # # for setting newest post to the front.
     # notes = notes.reverse()
 
@@ -55,6 +59,13 @@ def aboutme():
         )
         
     return render_template('index.html', notes=notes)
+
+@app.route('/posts/<post_id>')
+def postview(post_id):
+    notes = get_notes()
+    selected_note = notes['post_id']
+
+    return render_template('postview.html', note=selected_note)
 
 @app.route('/create/', methods=('GET', 'POST'))
 def create():
