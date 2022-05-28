@@ -11,3 +11,6 @@ class Post(db.Model):
 
     def __repr__(self): 
         return '<Post {}>'.format(self.title)
+
+    def all(self):
+        return (self.id, self.title, self.created, self.content)
