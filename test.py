@@ -126,7 +126,7 @@ class Database_Test(unittest.TestCase):
 
         self.assertEqual(5, len(self.posts))
         self.assertEqual((1, 'test', time, 'this  is  test  post'), self.posts[4].all())
-        
+
         for post in self.posts:
             print(post.title)
     
@@ -134,6 +134,9 @@ class Database_Test(unittest.TestCase):
         about_me = Post.query.filter_by(title='About Me').first()
 
         self.assertEqual('About Me', about_me.title)
+    
+    def test_could_delete_query(self):
+        pass
 
 
 class Paginate_Test(unittest.TestCase):

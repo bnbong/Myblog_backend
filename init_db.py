@@ -1,6 +1,12 @@
 from app.models import Post
 from app import db
 
+import markdown
+
+posts = Post.query.all()
+for post in posts:
+    db.session.delete(post)
+
 title_1 = 'The First Title'
 content_1 = '# test content1'
 
@@ -107,6 +113,11 @@ content_4 = '''
 </div>
 <br>
 '''
+
+content_1 = markdown.markdown(content_1)
+content_2 = markdown.markdown(content_2)
+content_3 = markdown.markdown(content_3)
+content_4 = markdown.markdown(content_4)
 
 post_1 = Post(title=title_1, content=content_1)
 db.session.add(post_1)
