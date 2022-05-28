@@ -1,7 +1,7 @@
 import os
 import sqlite3
 import markdown
-from flask import Flask, render_template, request, flash, redirect, url_for, paginate
+from flask import Flask, render_template, request, flash, redirect, url_for
 # from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -33,7 +33,7 @@ def get_notes():
 
 @app.route('/')
 def index():
-    page - request.args.get('page',type=int,default=1)
+    page = request.args.get('page',type=int,default=1)
     notes = get_notes()
     notes = notes.paginate(page, per_page=5)
     # # for setting newest post to the front.
