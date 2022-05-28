@@ -45,13 +45,13 @@ def index():
 
     # index.html from Myblog_frontend
     # return render_template('index.html', notes=notes)
-    return render_template('index.html', notes=posts)
+    return render_template('index.html', posts=posts)
 
 @app.route('/aboutme')
 def aboutme():
     about_me = Post.query.filter_by(title='About Me').first()
 
-    return render_template('postview.html', note=about_me)
+    return render_template('postview.html', post=about_me)
 
 @app.route('/posts/<post_id>')
 def postview(post_id):
@@ -59,7 +59,7 @@ def postview(post_id):
     post_id = int(post_id) - 1
     selected_post = posts[post_id]
 
-    return render_template('postview.html', note=selected_post)
+    return render_template('postview.html', post=selected_post)
 
 @app.route('/create/', methods=('GET', 'POST'))
 def create():
