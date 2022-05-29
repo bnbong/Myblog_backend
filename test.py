@@ -2,6 +2,26 @@ import unittest
 # from flask_app import *
 from app.routes import *
 
+# db connection function for test
+def get_db_connection():
+    database_dir = os.path.abspath('../Myblog_backend/Database/app.db')
+
+    conn = sqlite3.connect(database_dir)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# fetching databases for test
+def get_notes():
+    conn = get_db_connection()
+    db_notes = conn.execute('SELECT id, title, created, content FROM notes;').fetchall()
+    conn.close()
+
+    notes = []
+    for note in db_notes:
+        note = dict(note)
+        note['content'] = markdown.markdown(note['content'])
+        notes.append(note)
+    return notes
 
 class Dotenv_Test(unittest.TestCase):
     

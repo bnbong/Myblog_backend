@@ -8,26 +8,7 @@ import markdown
 
 from flask import render_template, request, flash, redirect, url_for
 
-# db connection function for test
-def get_db_connection():
-    database_dir = os.path.abspath('../Myblog_backend/Database/app.db')
-
-    conn = sqlite3.connect(database_dir)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-# fetching databases for test
-def get_notes():
-    conn = get_db_connection()
-    db_notes = conn.execute('SELECT id, title, created, content FROM notes;').fetchall()
-    conn.close()
-
-    notes = []
-    for note in db_notes:
-        note = dict(note)
-        note['content'] = markdown.markdown(note['content'])
-        notes.append(note)
-    return notes
+ROWS_PER_PAGE = 5
 
 def get_posts():
     posts = Post.query.order_by(Post.created.desc()).all()
@@ -36,7 +17,8 @@ def get_posts():
 
 @app.route('/')
 def index():
-    posts = get_posts()
+    page = request.args.get('page', 1, type=int, default=1)
+    posts = Post.query.order_by(Post.created.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
 
     return render_template('index.html', posts=posts)
 
@@ -56,7 +38,6 @@ def postview(post_id):
 
 @app.route('/create/', methods=('GET', 'POST'))
 def create():
-    # conn = get_db_connection()
 
     if request.method == 'POST':
         title = request.form['title']
@@ -75,9 +56,6 @@ def create():
         db.session.add(new_post)
         db.session.commit()
 
-        # conn.execute('INSERT INTO notes (title, content) VALUES (?, ?)', (title, content,))
-        # conn.commit()
-        # conn.close()
         return redirect(url_for('index'))
 
     return render_template('create.html')
