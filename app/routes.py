@@ -17,7 +17,7 @@ def get_posts():
 
 @app.route('/')
 def index():
-    page = request.args.get('page', 1, type=int, default=1)
+    page = request.args.get('page', type=int, default=1)
     posts = Post.query.order_by(Post.created.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
 
     return render_template('index.html', posts=posts)
