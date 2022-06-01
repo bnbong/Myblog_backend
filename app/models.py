@@ -15,3 +15,6 @@ class Post(db.Model):
 
     def all(self):
         return (self.id, self.title, self.created, self.content, self.tag)
+
+    def get_created(self):
+        return self.created.strftime("%c")
