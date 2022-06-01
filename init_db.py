@@ -141,6 +141,7 @@ for cat_name in listdirname:
               f1.close()
           with open(os.path.join(post_dir, cat_name, date, 'post.md'), 'r') as f2:
               post_content = f2.read()
+              post_content = markdown.markdown(post_content)
               f2.close()
           new_post = Post(title=post_title, content=post_content, created=post_created, tag=cat_name)
           db.session.add(new_post)
