@@ -14,4 +14,4 @@ class Post(db.Model):
         return '<Post {}>'.format(self.title)
 
     def all(self):
-        return (self.id, self.title, self.created, self.content)
+        return (self.id, self.title, self.created, self.content, self.tag)

@@ -144,8 +144,8 @@ class Database_Test(unittest.TestCase):
         from datetime import datetime
         time = datetime(2022, 5, 28, 13, 47, 42, 526501)
 
-        self.assertEqual(5, len(self.posts))
-        self.assertEqual((1, 'test', time, 'this  is  test  post'), self.posts[4].all())
+        self.assertEqual(4, len(self.posts))
+        self.assertEqual((1, 'The First Title', datetime(2022, 6, 1, 9, 20, 7, 444864), '<h1>test content1</h1>', 'IT'), self.posts[3].all())
 
         for post in self.posts:
             print(post.title)
@@ -155,6 +155,12 @@ class Database_Test(unittest.TestCase):
 
         self.assertEqual('About Me', about_me.title)
     
+    def test_could_found_categoried_posts(self):
+        posts = Post.query.filter_by(tag='IT').all()
+
+        self.assertEqual(1, len(posts))
+        self.assertEqual('The First Title', posts[0].title)
+
     def test_could_delete_query(self):
         pass
 
