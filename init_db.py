@@ -8,12 +8,15 @@ for post in posts:
     db.session.delete(post)
 
 title_1 = 'The First Title'
+tag_1 = 'IT'
 content_1 = '# test content1'
 
 title_2 = 'Another title'
+tag_2 = 'My_Daily_Life'
 content_2 = '_test content2_'
 
 title_3 = 'Test Title'
+tag_3 = 'Hobby'
 content_3 = 'Visit [this page](https://www.digitalocean.com/community/tutorials) for more tutorials.'
 
 title_4 = 'About Me'
@@ -119,13 +122,13 @@ content_2 = markdown.markdown(content_2)
 content_3 = markdown.markdown(content_3)
 content_4 = markdown.markdown(content_4)
 
-post_1 = Post(title=title_1, content=content_1)
+post_1 = Post(title=title_1, content=content_1, tag=tag_1)
 db.session.add(post_1)
 
-post_2 = Post(title=title_2, content=content_2)
+post_2 = Post(title=title_2, content=content_2, tag=tag_2)
 db.session.add(post_2)
 
-post_3 = Post(title=title_3, content=content_3)
+post_3 = Post(title=title_3, content=content_3, tag=tag_3)
 db.session.add(post_3)
 
 post_4 = Post(title=title_4, content=content_4)
