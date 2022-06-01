@@ -18,3 +18,6 @@ class Post(db.Model):
 
     def get_created(self):
         return self.created.strftime("%c")
+
+    def get_exact_created(self):
+        return self.created.strftime("%Y-%m-%d %X")

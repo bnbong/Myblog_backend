@@ -1,6 +1,40 @@
 import unittest
-# from flask_app import *
 from app.routes import *
+
+
+def test_update_db():
+    post_dir = os.path.abspath('../Myblog_posts/posts')
+    dirname = os.path.dirname(post_dir)
+    listdirname = os.listdir(post_dir)
+
+    # variable lists:
+    # IT, Study, Hobby, My_Daily_Life, Development, Game = \
+    #     listdirname[0], listdirname[1], listdirname[2], listdirname[3], listdirname[4], listdirname[5]
+
+    for cat_name in listdirname:
+        post_dates = os.listdir(os.path.join(post_dir, cat_name))
+
+    db_selected = Post.query.filter_by(tag=cat_name).all()
+    db_dates = []
+    for post in db_selected:
+        db_dates.append(post.get_exact_created())
+
+    for date in post_dates:
+        year, month, day, hour, minute, sec = int(date[:4]), int(date[4:6]), int(date[6:8]),\
+            int(date[8:10]), int(date[10:12]), int(date[12:14])
+        new_date = datetime(year, month, day, hour, minute, sec)
+
+        # checking and add newest posts at selected categories
+        if str(new_date) not in db_dates:
+            post_created = new_date
+            with open(os.path.join(post_dir, cat_name, date, 'title.txt'), 'r') as f1:
+                post_title = f1.read()
+                f1.close()
+            with open(os.path.join(post_dir, cat_name, date, 'post.md'), 'r') as f2:
+                post_content = f2.read()
+                f2.close()
+            new_post = Post(title=post_title, content=post_content, created=post_created, tag=cat_name)
+            db.session.add(new_post)
 
 
 class Dotenv_Test(unittest.TestCase):
@@ -116,46 +150,76 @@ class Database_Test(unittest.TestCase):
     from app import db
 
     def setUp(self):
+
+        posts = Post.query.all()
+
         self.posts = Post.query.order_by(Post.created.desc()).all()
 
     def test_could_get_db(self):
+
+        title_1 = 'The First Title' 
+        tag_1 = 'IT' 
+        content_1 = '# test content1' 
+        title_2 = 'Another title' 
+        tag_2 = 'My_Daily_Life' 
+        content_2 = '_test content2_' 
+        title_3 = 'Test Title' 
+        tag_3 = 'Hobby' 
+        content_3 = 'Visit [this page](https://www.digitalocean.com/community/tutorials) for more tutorials.'
+
+        content_1 = markdown.markdown(content_1) 
+        content_2 = markdown.markdown(content_2) 
+        content_3 = markdown.markdown(content_3)
+
+        post_1 = self.Post(title=title_1, content=content_1, tag=tag_1) 
+        self.db.session.add(post_1) 
+        post_2 = self.Post(title=title_2, content=content_2, tag=tag_2) 
+        self.db.session.add(post_2) 
+        post_3 = self.Post(title=title_3, content=content_3, tag=tag_3) 
+        self.db.session.add(post_3)
+
+        self.posts = Post.query.all()
+
         from datetime import datetime
         time = datetime(2022, 5, 28, 13, 47, 42, 526501)
 
-        selected_post = self.posts[3]
 
-        self.assertEqual(4, len(self.posts))
+        selected_post = self.posts[1]
+
         self.assertEqual(('The First Title', '<h1>test content1</h1>', 'IT'), (selected_post.title, selected_post.content, selected_post.tag))
 
+        print('all self posts:',self.posts)
+
         for post in self.posts:
-            print(post.title)
-            print(post.get_created())
+            print('title:', post.title)
+            print('created:', post.get_created())
+        
+        self.db.session.delete(post_1)
+        self.db.session.delete(post_2)
+        self.db.session.delete(post_3)
     
     def test_could_found_about_me_post(self):
         about_me = Post.query.filter_by(title='About Me').first()
 
         self.assertEqual('About Me', about_me.title)
     
-    def test_could_found_categoried_posts(self):
-        posts = Post.query.filter_by(tag='IT').all()
+    # def test_could_update_new_posts(self):
 
-        self.assertEqual(1, len(posts))
-        self.assertEqual('The First Title', posts[0].title)
+    #     print('self post:', self.Post.query.all())
+    #     self.assertEqual(1, len(self.Post.query.all()))
+
+    #     # should update 2 posts
+    #     test_update_db()
+    #     print('updated posts:', self.Post.query.all())
+    #     self.assertEqual(3, len(self.Post.query.all()))
+
+    #     # should not update any posts
+    #     test_update_db()
+    #     print('updated posts(2):', self.Post.query.all())
+    #     self.assertEqual(3, len(self.Post.query.all()))
 
     def test_could_delete_query(self):
         pass
-
-
-class Fetching_Post(unittest.TestCase):
-    
-    def could_read_post(self):
-        import datetime
-
-        # post_dir = os.path.abspath('../Myblog_posts/posts')
-        # Development = post_dir.__getitem__('Development')
-        # print(Development)
-        print('this is date')
-        '/home/bnbong/programming/projects/Myblog_posts/posts/Development/202012280018/post.md'
 
 
 class ServerTest(unittest.TestCase):
