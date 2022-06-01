@@ -25,7 +25,6 @@ def index():
 @app.route('/<category>')
 def category_view(category):
     page = request.args.get('page', type=int, default=1)
-    category = str(category)
     category_posts = Post.query.order_by(Post.query.filter_by(tag=category)).paginate(page=page, per_page=ROWS_PER_PAGE)
 
     return render_template('index.html', posts=category_posts)
