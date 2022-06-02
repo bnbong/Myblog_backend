@@ -133,3 +133,4 @@ dmypy.json
 app.db
 database.db
 Database/app.db
+app.db-journal

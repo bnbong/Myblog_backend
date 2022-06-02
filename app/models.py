@@ -8,6 +8,7 @@ class Post(db.Model):
     title = db.Column(db.String(125))
     created = db.Column(db.DateTime, default=datetime.utcnow)
     content = db.Column(db.String())
+    content_preview = db.Column(db.String(300))
     tag = db.Column(db.String(200))
 
     def __repr__(self): 

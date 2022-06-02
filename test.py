@@ -2,39 +2,39 @@ import unittest
 from app.routes import *
 
 
-def test_update_db():
-    post_dir = os.path.abspath('../Myblog_posts/posts')
-    dirname = os.path.dirname(post_dir)
-    listdirname = os.listdir(post_dir)
+# def test_update_db():
+#     post_dir = os.path.abspath('../Myblog_posts/posts')
+#     dirname = os.path.dirname(post_dir)
+#     listdirname = os.listdir(post_dir)
 
-    # variable lists:
-    # IT, Study, Hobby, My_Daily_Life, Development, Game = \
-    #     listdirname[0], listdirname[1], listdirname[2], listdirname[3], listdirname[4], listdirname[5]
+#     # variable lists:
+#     # IT, Study, Hobby, My_Daily_Life, Development, Game = \
+#     #     listdirname[0], listdirname[1], listdirname[2], listdirname[3], listdirname[4], listdirname[5]
 
-    for cat_name in listdirname:
-        post_dates = os.listdir(os.path.join(post_dir, cat_name))
+#     for cat_name in listdirname:
+#         post_dates = os.listdir(os.path.join(post_dir, cat_name))
 
-    db_selected = Post.query.filter_by(tag=cat_name).all()
-    db_dates = []
-    for post in db_selected:
-        db_dates.append(post.get_exact_created())
+#     db_selected = Post.query.filter_by(tag=cat_name).all()
+#     db_dates = []
+#     for post in db_selected:
+#         db_dates.append(post.get_exact_created())
 
-    for date in post_dates:
-        year, month, day, hour, minute, sec = int(date[:4]), int(date[4:6]), int(date[6:8]),\
-            int(date[8:10]), int(date[10:12]), int(date[12:14])
-        new_date = datetime(year, month, day, hour, minute, sec)
+#     for date in post_dates:
+#         year, month, day, hour, minute, sec = int(date[:4]), int(date[4:6]), int(date[6:8]),\
+#             int(date[8:10]), int(date[10:12]), int(date[12:14])
+#         new_date = datetime(year, month, day, hour, minute, sec)
 
-        # checking and add newest posts at selected categories
-        if str(new_date) not in db_dates:
-            post_created = new_date
-            with open(os.path.join(post_dir, cat_name, date, 'title.txt'), 'r') as f1:
-                post_title = f1.read()
-                f1.close()
-            with open(os.path.join(post_dir, cat_name, date, 'post.md'), 'r') as f2:
-                post_content = f2.read()
-                f2.close()
-            new_post = Post(title=post_title, content=post_content, created=post_created, tag=cat_name)
-            db.session.add(new_post)
+#         # checking and add newest posts at selected categories
+#         if str(new_date) not in db_dates:
+#             post_created = new_date
+#             with open(os.path.join(post_dir, cat_name, date, 'title.txt'), 'r') as f1:
+#                 post_title = f1.read()
+#                 f1.close()
+#             with open(os.path.join(post_dir, cat_name, date, 'post.md'), 'r') as f2:
+#                 post_content = f2.read()
+#                 f2.close()
+#             new_post = Post(title=post_title, content=post_content, created=post_created, tag=cat_name)
+#             db.session.add(new_post)
 
 
 class Dotenv_Test(unittest.TestCase):
@@ -167,15 +167,18 @@ class Database_Test(unittest.TestCase):
         tag_3 = 'Hobby' 
         content_3 = 'Visit [this page](https://www.digitalocean.com/community/tutorials) for more tutorials.'
 
+        content_1_preview = content_1[:300]
+        content_2_preview = content_2[:300]
+        content_3_preview = content_3[:300]
         content_1 = markdown.markdown(content_1) 
         content_2 = markdown.markdown(content_2) 
         content_3 = markdown.markdown(content_3)
 
-        post_1 = self.Post(title=title_1, content=content_1, tag=tag_1) 
+        post_1 = self.Post(title=title_1, content=content_1, content_preview=content_1_preview, tag=tag_1) 
         self.db.session.add(post_1) 
-        post_2 = self.Post(title=title_2, content=content_2, tag=tag_2) 
+        post_2 = self.Post(title=title_2, content=content_2, content_preview=content_2_preview, tag=tag_2) 
         self.db.session.add(post_2) 
-        post_3 = self.Post(title=title_3, content=content_3, tag=tag_3) 
+        post_3 = self.Post(title=title_3, content=content_3, content_preview=content_3_preview, tag=tag_3) 
         self.db.session.add(post_3)
 
         self.posts = Post.query.all()
@@ -184,7 +187,7 @@ class Database_Test(unittest.TestCase):
         time = datetime(2022, 5, 28, 13, 47, 42, 526501)
 
 
-        selected_post = self.posts[1]
+        selected_post = self.posts[3]
 
         self.assertEqual(('The First Title', '<h1>test content1</h1>', 'IT'), (selected_post.title, selected_post.content, selected_post.tag))
 
@@ -193,6 +196,7 @@ class Database_Test(unittest.TestCase):
         for post in self.posts:
             print('title:', post.title)
             print('created:', post.get_created())
+            print('content preview:', post.content_preview)
         
         self.db.session.delete(post_1)
         self.db.session.delete(post_2)

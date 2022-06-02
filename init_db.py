@@ -107,9 +107,10 @@ content_aboutme = '''
 <br>
 '''
 
+content_aboutme_preview = content_aboutme[:300]
 content_aboutme = markdown.markdown(content_aboutme)
 
-post_aboutme = Post(title=title_aboutme, content=content_aboutme)
+post_aboutme = Post(title=title_aboutme, content=content_aboutme, content_preview=content_aboutme_preview)
 db.session.add(post_aboutme)
 
 post_dir = os.path.abspath('../Myblog_posts/posts')
@@ -133,7 +134,7 @@ for cat_name in listdirname:
           int(date[8:10]), int(date[10:12]), int(date[12:14])
       new_date = datetime(year, month, day, hour, minute, sec)
 
-            # checking and add newest posts at selected categories
+      # checking and add newest posts at selected categories
       if str(new_date) not in db_dates:
           post_created = new_date
           with open(os.path.join(post_dir, cat_name, date, 'title.txt'), 'r') as f1:
@@ -141,9 +142,10 @@ for cat_name in listdirname:
               f1.close()
           with open(os.path.join(post_dir, cat_name, date, 'post.md'), 'r') as f2:
               post_content = f2.read()
+              post_content_preview = post_content[:300]
               post_content = markdown.markdown(post_content)
               f2.close()
-          new_post = Post(title=post_title, content=post_content, created=post_created, tag=cat_name)
+          new_post = Post(title=post_title, content=post_content, content_preview=post_content_preview, created=post_created, tag=cat_name)
           db.session.add(new_post)
 
 
