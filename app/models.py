@@ -6,6 +6,7 @@ from datetime import datetime
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(125))
+    thumbnail_url = db.Column(db.String(), default=None)
     created = db.Column(db.DateTime, default=datetime.utcnow)
     content = db.Column(db.String())
     content_preview = db.Column(db.String(300))
@@ -15,7 +16,7 @@ class Post(db.Model):
         return '<Post {}>'.format(self.title)
 
     def all(self):
-        return (self.id, self.title, self.created, self.content, self.content_preview, self.tag)
+        return (self.id, self.title, self.thumbnail_url, self.created, self.content, self.content_preview, self.tag)
 
     def get_created(self):
         return self.created.strftime("%c")

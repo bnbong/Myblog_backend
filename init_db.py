@@ -140,12 +140,15 @@ for cat_name in listdirname:
           with open(os.path.join(post_dir, cat_name, date, 'title.txt'), 'r') as f1:
               post_title = f1.read()
               f1.close()
-          with open(os.path.join(post_dir, cat_name, date, 'post.md'), 'r') as f2:
-              post_content = f2.read()
+          with open(os.path.join(post_dir, cat_name, date, 'thumbnail.txt'), 'r') as f2:
+              post_thumbnail_url = f2.read()
+              f2.close()
+          with open(os.path.join(post_dir, cat_name, date, 'post.md'), 'r') as f3:
+              post_content = f3.read()
               post_content_preview = post_content[:300]
               post_content = markdown.markdown(post_content)
-              f2.close()
-          new_post = Post(title=post_title, content=post_content, content_preview=post_content_preview, created=post_created, tag=cat_name)
+              f3.close()
+          new_post = Post(title=post_title, thumbnail_url=post_thumbnail_url, content=post_content, content_preview=post_content_preview, created=post_created, tag=cat_name)
           db.session.add(new_post)
 
 

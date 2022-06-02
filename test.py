@@ -226,6 +226,23 @@ class Database_Test(unittest.TestCase):
         pass
 
 
+class UtilTest(unittest.TestCase):
+    
+    def test_could_get_none_text_from_empty_txt_file(self):
+        import os
+
+        empty_text = None
+        with open('test.txt','wt') as f0:
+            f0.close()
+        with open('test.txt', 'rt') as f:
+            empty_text = f.read()
+            f.close()
+        
+        self.assertEqual(None, empty_text)
+
+        if os.path.exists('test.txt'):
+            os.remove('test.txt')
+
 class ServerTest(unittest.TestCase):
     pass
 
