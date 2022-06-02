@@ -9,7 +9,7 @@ import markdown
 # for post in posts:
 #     db.session.delete(post)
 
-if not Post.query.filter_by(title='About Me').first():
+if Post.query.filter_by(title='About Me').first() == None:
   title_aboutme = 'About Me'
   content_aboutme = '''
   ## 👋 Hello world!
