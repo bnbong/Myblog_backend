@@ -108,6 +108,7 @@ content_aboutme = '''
 '''
 
 content_aboutme_preview = content_aboutme[:298] + ".."
+content_aboutme_preview = markdown.markdown(content_aboutme_preview)
 content_aboutme = markdown.markdown(content_aboutme)
 
 post_aboutme = Post(title=title_aboutme, content=content_aboutme, content_preview=content_aboutme_preview)
@@ -146,6 +147,7 @@ for cat_name in listdirname:
           with open(os.path.join(post_dir, cat_name, date, 'post.md'), 'r') as f3:
               post_content = f3.read()
               post_content_preview = post_content[:298] + ".."
+              post_content_preview = markdown.markdown(post_content_preview)
               post_content = markdown.markdown(post_content)
               f3.close()
           new_post = Post(title=post_title, thumbnail_url=post_thumbnail_url, content=post_content, content_preview=post_content_preview, created=post_created, tag=cat_name)
