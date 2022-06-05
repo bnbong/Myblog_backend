@@ -202,10 +202,10 @@ class Database_Test(unittest.TestCase):
         self.db.session.delete(post_2)
         self.db.session.delete(post_3)
     
-    def test_could_found_about_me_post(self):
-        about_me = Post.query.filter_by(title='About Me').first()
+    # def test_could_found_about_me_post(self):
+    #     about_me = Post.query.filter_by(title='About Me').first()
 
-        self.assertEqual('About Me', about_me.title)
+    #     self.assertEqual('About Me', about_me.title)
     
     # def test_could_update_new_posts(self):
 
@@ -222,9 +222,25 @@ class Database_Test(unittest.TestCase):
     #     print('updated posts(2):', self.Post.query.all())
     #     self.assertEqual(3, len(self.Post.query.all()))
 
-    def test_could_delete_query(self):
-        pass
+    def test_could_get_about_me(self):
+        print(self.posts)
 
+
+class InitDBTest(unittest.TestCase):
+    import init_db
+
+    def test_could_get_posts(self):
+        posts = Post.query.all()
+
+        self.assertEqual(4, len(posts))
+
+    def test_could_get_aboutme(self):
+        from datetime import datetime
+        
+        aboutme_post = Post.query.filter_by(title="About Me").first()
+
+        self.assertEqual("About Me", aboutme_post.title)
+        self.assertEqual(datetime(2000, 2, 10, 1, 13, 17), aboutme_post.created)
 
 class UtilTest(unittest.TestCase):
     
