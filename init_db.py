@@ -41,7 +41,7 @@ def get_markdowned_content_from_txt_file():
         post_content = markdown.markdown(post_content)
         f3.close()
 
-    return post_content
+    return post_content, post_content_preview
 
 delete_all_posts_from_DB()
 
@@ -69,7 +69,7 @@ for category in category_name_lists:
           post_created = new_date
           post_title = get_title_from_txt_file()
           post_thumbnail_url = get_thumbnail_url_from_txt_file()
-          post_content = get_markdowned_content_from_txt_file()
+          post_content, post_content_preview = get_markdowned_content_from_txt_file()
 
           new_post = Post(title=post_title, thumbnail_url=post_thumbnail_url, content=post_content, \
               content_preview=post_content_preview, created=post_created, tag=category)
