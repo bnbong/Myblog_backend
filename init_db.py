@@ -19,27 +19,28 @@ def split_datestring_into_datetime(date):
 
     return year, month, day, hour, minute, sec
 
+def open_and_read_txt_file(file_name):
+    with open(os.path.join(post_dir, category, date, file_name), 'r') as f:
+        output = f.read()
+        f.close()
+
+        return output
+
 def get_title_from_txt_file():
-    with open(os.path.join(post_dir, category, date, 'title.txt'), 'r') as f1:
-        post_title = f1.read()
-        f1.close()
+    post_title = open_and_read_txt_file('title.txt')
     
     return post_title
 
 def get_thumbnail_url_from_txt_file():
-    with open(os.path.join(post_dir, category, date, 'thumbnail.txt'), 'r') as f2:
-        post_thumbnail_url = f2.read()
-        f2.close()
+    post_thumbnail_url = open_and_read_txt_file('thumbnail.txt')
     
     return post_thumbnail_url
 
 def get_markdowned_content_from_txt_file():
-    with open(os.path.join(post_dir, category, date, 'post.md'), 'r') as f3:
-        post_content = f3.read()
-        post_content_preview = post_content[:298] + ".."
-        post_content_preview = markdown.markdown(post_content_preview)
-        post_content = markdown.markdown(post_content)
-        f3.close()
+    post_content = open_and_read_txt_file('post.md') 
+    post_content_preview = post_content[:298] + ".."
+    post_content_preview = markdown.markdown(post_content_preview)
+    post_content = markdown.markdown(post_content)
 
     return post_content, post_content_preview
 

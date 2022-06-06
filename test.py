@@ -244,20 +244,49 @@ class InitDBTest(unittest.TestCase):
 
 class UtilTest(unittest.TestCase):
     
+    def setUp(self):
+        import os
+
+        with open('test.txt','wt') as f0:
+            f0.close()
+
     def test_could_get_none_text_from_empty_txt_file(self):
         import os
 
         empty_text = None
-        with open('test.txt','wt') as f0:
-            f0.close()
+        
         with open('test.txt', 'rt') as f:
             empty_text = f.read()
             f.close()
         
-        self.assertEqual(None, empty_text)
+        self.assertEqual('', empty_text)
 
         if os.path.exists('test.txt'):
             os.remove('test.txt')
+
+    def test_could_get_filectime(self):
+        import os, time
+
+        post_dir = os.path.abspath('../Myblog_posts/posts')
+
+        post_file = os.path.join(post_dir, 'Development/20220602062550/post.md')
+        
+        post_file_time = time.ctime(os.path.getmtime(post_file))
+        
+        with open(post_file, 'r') as f:
+            file = f.tell()
+            selected_post_file_time = os.path.getmtime(file)
+            selected_post_file_time = time.ctime(selected_post_file_time)
+            
+        # return last commited date at Github (more exactly, it will return last pulled date at Github Origin)
+        print(post_file_time)
+
+        # return last file opened date at code
+        print(selected_post_file_time)
+
+        # that two date will not same
+        self.assertNotEqual(post_file_time, selected_post_file_time)
+
 
 class ServerTest(unittest.TestCase):
     pass
