@@ -1,1 +1,0 @@
-The old directory which hand-writed sqlite3 schema is contained. (will be disregarded later)

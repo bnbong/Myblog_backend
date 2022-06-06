@@ -2,41 +2,6 @@ import unittest
 from app.routes import *
 
 
-# def test_update_db():
-#     post_dir = os.path.abspath('../Myblog_posts/posts')
-#     dirname = os.path.dirname(post_dir)
-#     listdirname = os.listdir(post_dir)
-
-#     # variable lists:
-#     # IT, Study, Hobby, My_Daily_Life, Development, Game = \
-#     #     listdirname[0], listdirname[1], listdirname[2], listdirname[3], listdirname[4], listdirname[5]
-
-#     for cat_name in listdirname:
-#         post_dates = os.listdir(os.path.join(post_dir, cat_name))
-
-#     db_selected = Post.query.filter_by(tag=cat_name).all()
-#     db_dates = []
-#     for post in db_selected:
-#         db_dates.append(post.get_exact_created())
-
-#     for date in post_dates:
-#         year, month, day, hour, minute, sec = int(date[:4]), int(date[4:6]), int(date[6:8]),\
-#             int(date[8:10]), int(date[10:12]), int(date[12:14])
-#         new_date = datetime(year, month, day, hour, minute, sec)
-
-#         # checking and add newest posts at selected categories
-#         if str(new_date) not in db_dates:
-#             post_created = new_date
-#             with open(os.path.join(post_dir, cat_name, date, 'title.txt'), 'r') as f1:
-#                 post_title = f1.read()
-#                 f1.close()
-#             with open(os.path.join(post_dir, cat_name, date, 'post.md'), 'r') as f2:
-#                 post_content = f2.read()
-#                 f2.close()
-#             new_post = Post(title=post_title, content=post_content, created=post_created, tag=cat_name)
-#             db.session.add(new_post)
-
-
 class Dotenv_Test(unittest.TestCase):
     
     def test_could_load_SECRET_KEY_from_env(self):
@@ -94,32 +59,6 @@ class Markdown_Test(unittest.TestCase):
         self.assertEqual('''<ul>
 <li><a href="https://github.com/bnbong/bnbong.github.io">Follow Link Here</a></li>
 </ul>''', converted_text)
-
-#     def test_could_save_converted_text_in_DB(self):
-#         from datetime import datetime
-
-#         # converted_text = markdown.markdown(self.long_md_text)
-#         content = self.long_md_text
-#         title = 'Test title'
-#         date, time = (datetime.today().isoformat(timespec='seconds')).split('T')
-#         time_now = f'{date} {time}'
-
-#         # insert new DB instance which content is converted long markdown text.
-#         self.conn.execute('INSERT INTO notes (title, content) VALUES (?, ?)', (title, content,))
-        
-#         db_notes = self.conn.execute('SELECT id, title, created, content FROM notes;').fetchall()
-#         notes = []
-#         for note in db_notes:
-#             note = dict(note)
-#             note['content'] = markdown.markdown(note['content'])
-#             notes.append(note)
-
-#         self.assertEqual('''<h2>👋 Hello world!</h2>
-# <ul>
-# <li>한양대학교 ERICA 소프트웨어학부 19학번 (2019.03.02 ~ )</li>
-# <li>대한민국 공군 ROKAF 병 825기 정보체계관리(30010 과정) (2021.04.12 ~ 2023.01.11)</li>
-# <li>GiftMusic backend 개발자 (2020.09 ~ 2021.04)</li>
-# </ul>''', notes[-1]['content'])
 
     def test_is_double_markdown_function_work(self):
         # it working! double converting does not matter the text form.
@@ -187,43 +126,23 @@ class Database_Test(unittest.TestCase):
         time = datetime(2022, 5, 28, 13, 47, 42, 526501)
 
 
-        selected_post = self.posts[3]
+        selected_post = self.posts[-3]
 
         self.assertEqual(('The First Title', '<h1>test content1</h1>', 'IT'), (selected_post.title, selected_post.content, selected_post.tag))
 
-        print('all self posts:',self.posts)
-
         for post in self.posts:
-            print('title:', post.title)
-            print('created:', post.get_created())
-            print('content preview:', post.content_preview)
+            print('\ntitle:', post.title)
+            print('\ncreated:', post.get_created())
         
         self.db.session.delete(post_1)
         self.db.session.delete(post_2)
         self.db.session.delete(post_3)
-    
-    # def test_could_found_about_me_post(self):
-    #     about_me = Post.query.filter_by(title='About Me').first()
 
-    #     self.assertEqual('About Me', about_me.title)
-    
-    # def test_could_update_new_posts(self):
-
-    #     print('self post:', self.Post.query.all())
-    #     self.assertEqual(1, len(self.Post.query.all()))
-
-    #     # should update 2 posts
-    #     test_update_db()
-    #     print('updated posts:', self.Post.query.all())
-    #     self.assertEqual(3, len(self.Post.query.all()))
-
-    #     # should not update any posts
-    #     test_update_db()
-    #     print('updated posts(2):', self.Post.query.all())
-    #     self.assertEqual(3, len(self.Post.query.all()))
+        if os.path.exists('app.db-journal'):
+            os.remove('app.db-journal')
 
     def test_could_get_about_me(self):
-        print(self.posts)
+        pass
 
 
 class InitDBTest(unittest.TestCase):
@@ -254,12 +173,16 @@ class UtilTest(unittest.TestCase):
         import os
 
         empty_text = None
+
+        self.assertEqual(None, empty_text)
+        self.assertNotEqual('', empty_text)
         
         with open('test.txt', 'rt') as f:
             empty_text = f.read()
             f.close()
         
         self.assertEqual('', empty_text)
+        self.assertNotEqual(None, empty_text)
 
         if os.path.exists('test.txt'):
             os.remove('test.txt')
@@ -279,10 +202,10 @@ class UtilTest(unittest.TestCase):
             selected_post_file_time = time.ctime(selected_post_file_time)
             
         # return last commited date at Github (more exactly, it will return last pulled date at Github Origin)
-        print(post_file_time)
+        print('\nLast Commited Date from Github:', post_file_time)
 
         # return last file opened date at code
-        print(selected_post_file_time)
+        print('\nLast File Opened Date from Local:', selected_post_file_time)
 
         # that two date will not same
         self.assertNotEqual(post_file_time, selected_post_file_time)

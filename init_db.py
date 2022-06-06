@@ -1,5 +1,3 @@
-# TODO: make fuctions which update existing posts when they updated. 
-
 from app.models import Post
 from app import db
 from datetime import datetime
@@ -8,74 +6,127 @@ import os
 import markdown
 
 
-def delete_all_posts_from_DB():
-    posts = Post.query.all()
-    for post in posts:
-        db.session.delete(post)
+class new_post:
+    post_dir = os.path.abspath('../Myblog_posts/posts')
+    category_name_lists = os.listdir(post_dir)
+    category = None
+    date = None
 
-def split_datestring_into_datetime(date):
-    year, month, day, hour, minute, sec = int(date[:4]), int(date[4:6]), int(date[6:8]),\
-          int(date[8:10]), int(date[10:12]), int(date[12:14])
+    def __init__(self, new_date):
+        self.new_date = new_date
 
-    return year, month, day, hour, minute, sec
 
-def open_and_read_txt_file(file_name):
-    with open(os.path.join(post_dir, category, date, file_name), 'r') as f:
-        output = f.read()
-        f.close()
-
-        return output
-
-def get_title_from_txt_file():
-    post_title = open_and_read_txt_file('title.txt')
+    def get_post_dir(self):
+        return self.post_dir
     
-    return post_title
+    def get_category_name_lists(self):
+        return self.category_name_lists
 
-def get_thumbnail_url_from_txt_file():
-    post_thumbnail_url = open_and_read_txt_file('thumbnail.txt')
+    def get_category(self):
+        return self.category
     
-    return post_thumbnail_url
+    def get_date(self):
+        return self.date
 
-def get_markdowned_content_from_txt_file():
-    post_content = open_and_read_txt_file('post.md') 
-    post_content_preview = post_content[:298] + ".."
-    post_content_preview = markdown.markdown(post_content_preview)
-    post_content = markdown.markdown(post_content)
+    def get_new_date(self):
+        return self.new_date
+    
 
-    return post_content, post_content_preview
+    def set_category(self, category):
+        self.category = category
+    
+    def set_date(self, date):
+        self.date = date
 
-delete_all_posts_from_DB()
-
-post_dir = os.path.abspath('../Myblog_posts/posts')
-category_name_lists = os.listdir(post_dir)
-
-# possible category lists:
-# IT, Study, Hobby, My_Daily_Life, Development, Game = \
-#     listdirname[0], listdirname[1], listdirname[2], listdirname[3], listdirname[4], listdirname[5]
-
-for category in category_name_lists:
-  post_dates = os.listdir(os.path.join(post_dir, category))
-
-  db_selected = Post.query.filter_by(tag=category).all()
-  db_dates = []
-  for post in db_selected:
-      db_dates.append(post.get_exact_created())
-
-  for date in post_dates:
-      year, month, day, hour, minute, sec = split_datestring_into_datetime(date)
-      new_date = datetime(year, month, day, hour, minute, sec)
-
-      # checking and add newest posts at selected categories
-      if str(new_date) not in db_dates:
-          post_created = new_date
-          post_title = get_title_from_txt_file()
-          post_thumbnail_url = get_thumbnail_url_from_txt_file()
-          post_content, post_content_preview = get_markdowned_content_from_txt_file()
-
-          new_post = Post(title=post_title, thumbnail_url=post_thumbnail_url, content=post_content, \
-              content_preview=post_content_preview, created=post_created, tag=category)
-
-          db.session.add(new_post)
+    def set_new_date(self, new_date):
+        self.new_date = new_date
 
 
-db.session.commit()
+    def open_and_read_txt_file(self, file_name):
+        with open(os.path.join(self.post_dir, self.category, self.date, file_name), 'r') as f:
+            output = f.read()
+            f.close()
+
+            return output
+    def get_title_from_txt_file(self):
+        post_title = self.open_and_read_txt_file('title.txt')
+        
+        return post_title
+
+    def get_thumbnail_url_from_txt_file(self):
+        post_thumbnail_url = self.open_and_read_txt_file('thumbnail.txt')
+        
+        return post_thumbnail_url
+
+    def get_markdowned_content_from_txt_file(self):
+        post_content = self.open_and_read_txt_file('post.md') 
+        post_content_preview = post_content[:298] + ".."
+        post_content_preview = markdown.markdown(post_content_preview)
+        post_content = markdown.markdown(post_content)
+
+        return post_content, post_content_preview
+
+    def get_new_post_data(self):
+        post_created = self.get_new_date()
+        post_title = self.get_title_from_txt_file()
+        post_thumbnail_url = self.get_thumbnail_url_from_txt_file()
+        post_content, post_content_preview = self.get_markdowned_content_from_txt_file()
+
+        return post_created, post_title, post_thumbnail_url, post_content, post_content_preview
+
+
+class init_db(new_post):
+
+    def __init__(self):
+        self.initialize_database()
+
+    def initialize_database(self):
+
+        self.delete_all_posts_from_DB()
+
+        # possible category lists:
+        # IT, Study, Hobby, My_Daily_Life, Development, Game = \
+        #     listdirname[0], listdirname[1], listdirname[2], listdirname[3], listdirname[4], listdirname[5]
+
+        category_name_lists = self.get_category_name_lists()
+        post_dir = self.get_post_dir()
+
+        for category in category_name_lists:
+            self.set_category(category)
+            category = self.get_category()
+
+            post_dates = os.listdir(os.path.join(post_dir, category))
+
+            for date in post_dates:
+                self.set_date(date)
+                date = self.get_date()
+
+                year, month, day, hour, minute, sec = self.split_datestring_into_datetime(date)
+                new_date = datetime(year, month, day, hour, minute, sec)
+
+                self.set_new_date(new_date)
+
+                post_created, post_title,post_thumbnail_url, post_content, post_content_preview\
+                    = self.get_new_post_data()
+
+                new_post = Post(title=post_title, thumbnail_url=post_thumbnail_url, content=post_content, \
+                    content_preview=post_content_preview, created=post_created, tag=category)
+
+                db.session.add(new_post)
+
+        db.session.commit()
+
+    def delete_all_posts_from_DB(self):
+        posts = Post.query.all()
+        for post in posts:
+            db.session.delete(post)
+
+    def split_datestring_into_datetime(self, date):
+        year, month, day, hour, minute, sec = int(date[:4]), int(date[4:6]), int(date[6:8]),\
+            int(date[8:10]), int(date[10:12]), int(date[12:14])
+
+        return year, month, day, hour, minute, sec
+
+
+if __name__ == '__main__':
+    init_db()
