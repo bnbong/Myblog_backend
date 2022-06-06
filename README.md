@@ -9,6 +9,9 @@ backend-side of blog project wriiten with Python Flask
 ## venv deactivate
  > deactivate
 
+## initialize database
+ > bash initialize_database.sh
+
 ## app.db init
  > flask db init
 

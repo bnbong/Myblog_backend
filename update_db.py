@@ -1,4 +1,5 @@
 # TODO: make fuctions which update existing posts when they updated. 
+# the post id cannot be modified, so find post using post_id and update it.
 
 post_dir = os.path.abspath('../Myblog_posts/posts')
 category_name_lists = os.listdir(post_dir)

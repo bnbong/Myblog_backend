@@ -6,7 +6,7 @@ import os
 import markdown
 
 
-class get_post:
+class GetPost:
     post_dir = os.path.abspath('../Myblog_posts/posts')
     category_name_lists = os.listdir(post_dir)
     category = None
@@ -38,7 +38,7 @@ class get_post:
             f.close()
 
             return output
-            
+
     def get_title_from_txt_file(self):
         post_title = self.open_and_read_txt_file('title.txt')
         
@@ -66,7 +66,7 @@ class get_post:
         return post_created, post_title, post_thumbnail_url, post_content, post_content_preview
 
 
-class new_post(get_post):
+class GetNewPost(GetPost):
 
     def __init__(self, new_date):
         self.new_date = new_date
@@ -88,7 +88,8 @@ class new_post(get_post):
 
         return post_created, post_title, post_thumbnail_url, post_content, post_content_preview
 
-class init_db(new_post):
+
+class InitializeDB(GetNewPost):
 
     def __init__(self):
         self.initialize_database()
@@ -114,18 +115,8 @@ class init_db(new_post):
                 self.set_date(date)
                 date = self.get_date()
 
-                year, month, day, hour, minute, sec = self.split_datestring_into_datetime(date)
-                new_date = datetime(year, month, day, hour, minute, sec)
-
-                self.set_new_date(new_date)
-
-                post_created, post_title,post_thumbnail_url, post_content, post_content_preview\
-                    = self.get_new_post_data()
-
-                new_post = Post(title=post_title, thumbnail_url=post_thumbnail_url, content=post_content, \
-                    content_preview=post_content_preview, created=post_created, tag=category)
-
-                db.session.add(new_post)
+                new_post_date = self.make_new_date_from_given_date(date)
+                self.add_new_post_into_db(new_post_date)
 
         db.session.commit()
 
@@ -140,6 +131,26 @@ class init_db(new_post):
 
         return year, month, day, hour, minute, sec
 
+    def make_new_date_from_given_date(self, date):
+        self.set_date(date)
+        date = self.get_date()
+
+        year, month, day, hour, minute, sec = self.split_datestring_into_datetime(date)
+        new_date = datetime(year, month, day, hour, minute, sec)
+
+        self.set_new_date(new_date)
+
+        return self.get_new_date()
+
+    def add_new_post_into_db(self, date):
+        post_created, post_title,post_thumbnail_url, post_content, post_content_preview\
+            = self.get_new_post_data()
+
+        new_post = Post(title=post_title, thumbnail_url=post_thumbnail_url, content=post_content, \
+            content_preview=post_content_preview, created=post_created, tag=self.get_category())
+
+        db.session.add(new_post)
+
 
 if __name__ == '__main__':
-    init_db()
+    InitializeDB()
