@@ -6,14 +6,11 @@ import os
 import markdown
 
 
-class new_post:
+class get_post:
     post_dir = os.path.abspath('../Myblog_posts/posts')
     category_name_lists = os.listdir(post_dir)
     category = None
     date = None
-
-    def __init__(self, new_date):
-        self.new_date = new_date
 
 
     def get_post_dir(self):
@@ -28,9 +25,6 @@ class new_post:
     def get_date(self):
         return self.date
 
-    def get_new_date(self):
-        return self.new_date
-    
 
     def set_category(self, category):
         self.category = category
@@ -38,16 +32,13 @@ class new_post:
     def set_date(self, date):
         self.date = date
 
-    def set_new_date(self, new_date):
-        self.new_date = new_date
-
-
     def open_and_read_txt_file(self, file_name):
         with open(os.path.join(self.post_dir, self.category, self.date, file_name), 'r') as f:
             output = f.read()
             f.close()
 
             return output
+            
     def get_title_from_txt_file(self):
         post_title = self.open_and_read_txt_file('title.txt')
         
@@ -66,14 +57,36 @@ class new_post:
 
         return post_content, post_content_preview
 
-    def get_new_post_data(self):
-        post_created = self.get_new_date()
+    def get_post_data(self):
+        post_created = self.get_date()
         post_title = self.get_title_from_txt_file()
         post_thumbnail_url = self.get_thumbnail_url_from_txt_file()
         post_content, post_content_preview = self.get_markdowned_content_from_txt_file()
 
         return post_created, post_title, post_thumbnail_url, post_content, post_content_preview
 
+
+class new_post(get_post):
+
+    def __init__(self, new_date):
+        self.new_date = new_date
+
+
+    def get_new_date(self):
+        return self.new_date
+
+
+    def set_new_date(self, new_date):
+        self.new_date = new_date
+
+
+    def get_new_post_data(self):
+        post_created, post_title, post_thumbnail_url, post_content, post_content_preview \
+            = super().get_post_data()
+
+        post_created = self.get_new_date()
+
+        return post_created, post_title, post_thumbnail_url, post_content, post_content_preview
 
 class init_db(new_post):
 
