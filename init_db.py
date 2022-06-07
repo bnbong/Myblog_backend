@@ -7,6 +7,7 @@ import markdown
 
 
 class GetPost:
+
     post_dir = os.path.abspath('../Myblog_posts/posts')
     category_name_lists = os.listdir(post_dir)
     category = None
@@ -31,6 +32,12 @@ class GetPost:
     
     def set_date(self, date):
         self.date = date
+
+    def split_datestring_into_datetime(self, date):
+        year, month, day, hour, minute, sec = int(date[:4]), int(date[4:6]), int(date[6:8]),\
+            int(date[8:10]), int(date[10:12]), int(date[12:14])
+
+        return year, month, day, hour, minute, sec
 
     def open_and_read_txt_file(self, file_name):
         with open(os.path.join(self.post_dir, self.category, self.date, file_name), 'r') as f:
@@ -124,12 +131,6 @@ class InitializeDB(GetNewPost):
         posts = Post.query.all()
         for post in posts:
             db.session.delete(post)
-
-    def split_datestring_into_datetime(self, date):
-        year, month, day, hour, minute, sec = int(date[:4]), int(date[4:6]), int(date[6:8]),\
-            int(date[8:10]), int(date[10:12]), int(date[12:14])
-
-        return year, month, day, hour, minute, sec
 
     def make_new_date_from_given_date(self, date):
         self.set_date(date)

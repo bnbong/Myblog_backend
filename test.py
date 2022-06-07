@@ -141,11 +141,65 @@ class Database_Test(unittest.TestCase):
         if os.path.exists('app.db-journal'):
             os.remove('app.db-journal')
 
-    def test_could_get_about_me(self):
+
+class ModifingDB_Test(unittest.TestCase):
+    from app.models import Post
+    from app import db
+
+    import os
+    
+    post_dir = os.path.abspath('../Myblog_posts/posts')
+    category = 'Development'
+
+    category_dir = os.path.join(post_dir, category)
+
+    first_post_date = os.listdir(category_dir)[0]
+
+    post_location = os.path.join(category_dir, first_post_date)
+
+    thumbnail_url_file, title_file, content_file = \
+            os.listdir(post_dir)[0], os.listdir(post_dir)[1], os.listdir(post_dir)[2]
+
+    def setUp(self):
+        from datetime import datetime
+
+        test_title = 'This is Test title'
+        test_url = 'https://thisistest.test/'
+        test_category = self.category
+        test_content = 'Hello world this is test content'
+        test_content_preview = 'Hello world th..'
+        test_created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        test_date, test_time = test_created.split()
+        Y, M, D = test_date.split('-')
+        # H, m, S = test_time.split('-')
+
+        # test_created_folder = Y+M+D+H+m+S
+
+        print(Y, M, D)
+
+    # TODO: should write update_db testcases
+    # 1. post deleted
+    def test_should_update_deleted_post(self):
+        # import shutil
+
+        # shutil.rmtree(self.post_location)
+        pass
+
+    # 2. post created
+    def test_should_update_created_post(self):
+        pass
+
+    # 3. post modified - modify title or content or content preview
+    def test_should_update_modified_post_1(self):
+        pass
+
+    # 3. post modified - modify category(tag)
+    def test_should_update_modified_post_2(self):
         pass
 
 
-class InitDBTest(unittest.TestCase):
+
+class InitDB_Test(unittest.TestCase):
     import init_db
 
     def test_could_get_posts(self):
@@ -161,13 +215,32 @@ class InitDBTest(unittest.TestCase):
         self.assertEqual("About Me", aboutme_post.title)
         self.assertEqual(datetime(2000, 2, 10, 1, 13, 17), aboutme_post.created)
 
-class UtilTest(unittest.TestCase):
-    
-    def setUp(self):
-        import os
+    def test_should_read_double_filtering(self):
+        post1 = Post.query.filter_by(title='About Me')
 
-        with open('test.txt','wt') as f0:
-            f0.close()
+        post2 = post1.filter_by(tag='My_Daily_Life')
+        print(post2.all())
+
+class Util_Test(unittest.TestCase):
+    
+    def test_could_get_amout_of_posts_at_category_folder(self):
+        post_dir = os.path.abspath('../Myblog_posts/posts')
+        category_name_lists = os.listdir(post_dir)
+
+        develop_category_folder = os.path.join(post_dir, 'Development')
+
+        self.assertEqual(2, len(os.listdir(develop_category_folder)))
+        print(os.listdir(develop_category_folder))
+
+    def test_could_print_difference_of_two_lists(self):
+        list1 = ['Test1', 'Test2', 'Test3']
+        list2 = ['Test1']
+
+        setlist1 = set(list1)
+        setlist2 = set(list2)
+
+        self.assertEqual(2, len(setlist1 - setlist2))
+        self.assertEqual(0, len(list(setlist2 - setlist1)))
 
     def test_could_get_none_text_from_empty_txt_file(self):
         import os
@@ -176,16 +249,15 @@ class UtilTest(unittest.TestCase):
 
         self.assertEqual(None, empty_text)
         self.assertNotEqual('', empty_text)
-        
-        with open('test.txt', 'rt') as f:
+        with open('test.txt', 'wt') as f0:
+            f0.close()
+        with open('test.txt', 'r') as f:
             empty_text = f.read()
+            os.remove('test.txt')
             f.close()
         
         self.assertEqual('', empty_text)
         self.assertNotEqual(None, empty_text)
-
-        if os.path.exists('test.txt'):
-            os.remove('test.txt')
 
     def test_could_get_filectime(self):
         import os, time
@@ -211,7 +283,7 @@ class UtilTest(unittest.TestCase):
         self.assertNotEqual(post_file_time, selected_post_file_time)
 
 
-class ServerTest(unittest.TestCase):
+class Server_Test(unittest.TestCase):
     pass
 
 if __name__ == '__main__':
