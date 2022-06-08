@@ -90,58 +90,89 @@ class Database_Test(unittest.TestCase):
     from app.models import Post
     from app import db
 
+    from datetime import datetime
+
+    # 쟁점: 메인 db로 사용되는 app.db가 아니라 testcase 용도로 따로 .db파일을 파서 사용할 수 있는가.
+
+    test_post = None
+    all_posts = Post.query.order_by(Post.created.desc()).all()
     def setUp(self):
+        self.posts = Post.query.order_by(Post.created.desc()).all() # update_db.py 코드도 해당코드로 변경?
 
-        posts = Post.query.all()
+    def get_test_post(self):
+        return self.test_post
 
-        self.posts = Post.query.order_by(Post.created.desc()).all()
+    def get_all_posts(self):
+        return self.all_posts
 
-    def test_could_get_db(self):
+    def get_selected_post_by_title(self, title):
+        return Post.query.filter_by(title=title).first()
 
-        title_1 = 'The First Title' 
-        tag_1 = 'IT' 
-        content_1 = '# test content1' 
-        title_2 = 'Another title' 
-        tag_2 = 'My_Daily_Life' 
-        content_2 = '_test content2_' 
-        title_3 = 'Test Title' 
-        tag_3 = 'Hobby' 
-        content_3 = 'Visit [this page](https://www.digitalocean.com/community/tutorials) for more tutorials.'
+    def set_all_posts(self, all_posts):
+        self.all_posts = all_posts
 
-        content_1_preview = content_1[:300]
-        content_2_preview = content_2[:300]
-        content_3_preview = content_3[:300]
-        content_1 = markdown.markdown(content_1) 
-        content_2 = markdown.markdown(content_2) 
-        content_3 = markdown.markdown(content_3)
+    def set_test_post(self, post):
+        self.test_post = post
 
-        post_1 = self.Post(title=title_1, content=content_1, content_preview=content_1_preview, tag=tag_1) 
-        self.db.session.add(post_1) 
-        post_2 = self.Post(title=title_2, content=content_2, content_preview=content_2_preview, tag=tag_2) 
-        self.db.session.add(post_2) 
-        post_3 = self.Post(title=title_3, content=content_3, content_preview=content_3_preview, tag=tag_3) 
-        self.db.session.add(post_3)
+    def input_post_at_db(self):
+        test_title = 'Test title for testing'
+        test_tag = 'IT'
+        test_content = 'This is test content'
+        test_content_preview = test_content[:300] + '..'
+        test_created = self.datetime(2020,2,2,2,2,2)
 
-        self.posts = Post.query.all()
+        test_content = markdown.markdown(test_content)
 
-        from datetime import datetime
-        time = datetime(2022, 5, 28, 13, 47, 42, 526501)
+        test_post = Post(title=test_title, tag=test_tag, content=test_content, \
+            content_preview=test_content_preview, created=test_created)
+        self.set_test_post(test_post)
 
+        db.session.add(test_post)
+        self.set_all_posts(Post.query.all())
 
-        selected_post = self.posts[-3]
+        return test_post
 
-        self.assertEqual(('The First Title', '<h1>test content1</h1>', 'IT'), (selected_post.title, selected_post.content, selected_post.tag))
+    # init db check
+    def test_could_get_all_posts_is_at_db(self):
+        self.assertEqual(4, len(self.get_all_posts()))
 
-        for post in self.posts:
-            print('\ntitle:', post.title)
-            print('\ncreated:', post.get_created())
+        last_post = self.posts[-1]
         
-        self.db.session.delete(post_1)
-        self.db.session.delete(post_2)
-        self.db.session.delete(post_3)
+        self.assertEqual('About Me', last_post.title)
+        self.assertEqual(self.datetime(2000, 2, 10, 1, 13, 17), last_post.created)
+        self.assertEqual('My_Daily_Life', last_post.tag)
+        # self.assertEqual(first, second)
+        self.assertEqual('''<h1>Jun Hyeok Lee</h1>
+<h2>👋 Hello world!</h2>
+<ul>
+<li>Born on 2000/02/10</li>
+<li>Male</li>
+<li>Living in Pangyo, Bundang-gu, Gyeonggi-do, South Korea</li>
+<li>Love playing Game, Guitar and coding!   </li>
+</ul>
+<hr />
+<ul>
+<li>한양대학교 ERICA 소프트웨어학부 19학번 (2019.03.02 ~ )</li>
+<li>대한민국 공군 ROKAF 병 825기 정보체계관리(30010 과정) (2..</li>
+</ul>''', last_post.content_preview)
 
-        if os.path.exists('app.db-journal'):
-            os.remove('app.db-journal')
+    # db input check
+    def test_could_add_post_into_db(self):
+
+        self.assertEqual(None, self.get_test_post())
+
+        added_post = self.input_post_at_db()
+
+        self.assertEqual(self.get_test_post(), added_post)
+
+        self.set_all_posts(self.posts)
+        all_posts = self.get_all_posts()
+
+        print(all_posts)
+        print(self.posts)
+
+    
+
 
 
 class ModifingDB_Test(unittest.TestCase):
