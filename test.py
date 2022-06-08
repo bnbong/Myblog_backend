@@ -1,3 +1,4 @@
+#TODO: fix bug that when run python test.py returns error but does not when run modules manually.
 import unittest
 from app.routes import *
 
@@ -84,6 +85,7 @@ class Markdown_Test(unittest.TestCase):
 </div>''', converted_text)
 
 
+#TODO: improve codes -> make code to check all Myblog_posts' data is at db.
 class Database_Test(unittest.TestCase):
     from app.models import Post
     from app import db
@@ -146,56 +148,91 @@ class ModifingDB_Test(unittest.TestCase):
     from app.models import Post
     from app import db
 
+    from datetime import datetime
+
     import os
+    import markdown
     
     post_dir = os.path.abspath('../Myblog_posts/posts')
     category = 'Development'
+    date = None
 
     category_dir = os.path.join(post_dir, category)
 
-    first_post_date = os.listdir(category_dir)[0]
+    # first_post_date = os.listdir(category_dir)[0]
 
-    post_location = os.path.join(category_dir, first_post_date)
+    # post_location = os.path.join(category_dir, first_post_date)
 
-    thumbnail_url_file, title_file, content_file = \
-            os.listdir(post_dir)[0], os.listdir(post_dir)[1], os.listdir(post_dir)[2]
+    # thumbnail_url_file, title_file, content_file = \
+    #         os.listdir(post_dir)[0], os.listdir(post_dir)[1], os.listdir(post_dir)[2]
 
     def setUp(self):
         from datetime import datetime
+
+        test_created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        test_date, test_time = test_created.split()
+        Y, M, D = test_date.split('-')
+        H, m, S = test_time.split(':')
+
+        test_created_folder = Y+M+D+H+m+S
+
+        test_folder = os.path.join(self.category_dir, test_created_folder)
+
+        return test_folder
+        # os.mkdir(os.path.join(self.category_dir, test_created_folder))
+        # print(test_created_folder)
+
+    def make_file(self, file_name, content):
+        with open(file_name, 'w') as f:
+            f.write(content)
+            f.close()
+
+    # TODO: should write update_db testcases
+    # 1. post deleted
+    def test_should_update_deleted_post(self):
+        import shutil
+        from init_db import InitializeDB
+        from update_db import UpdatePost
+
+
+        test_folder = self.setUp()
+
+        # make post folder
+        os.mkdir(test_folder)
 
         test_title = 'This is Test title'
         test_url = 'https://thisistest.test/'
         test_category = self.category
         test_content = 'Hello world this is test content'
         test_content_preview = 'Hello world th..'
-        test_created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        test_date, test_time = test_created.split()
-        Y, M, D = test_date.split('-')
-        # H, m, S = test_time.split('-')
 
-        # test_created_folder = Y+M+D+H+m+S
+        self.make_file(os.path.join(test_folder, 'title.txt'), test_title)
+        self.make_file(os.path.join(test_folder, 'thumbnail.txt'), test_url)
+        self.make_file(os.path.join(test_folder, 'post.md'), test_content)
 
-        print(Y, M, D)
+        InitializeDB()
 
-    # TODO: should write update_db testcases
-    # 1. post deleted
-    def test_should_update_deleted_post(self):
-        # import shutil
+        self.assertEqual(3, len(Post.query.filter_by(tag=test_category).all()))
 
-        # shutil.rmtree(self.post_location)
-        pass
+        # remove post
+        shutil.rmtree(test_folder)
+
+        UpdatePost()
+
+        self.assertEqual(2, len(Post.query.filter_by(tag=test_category).all()))
 
     # 2. post created
-    def test_should_update_created_post(self):
-        pass
+    # def test_should_update_created_post(self):
+    #     test_folder = self.setUp()
+    #     os.rmdir(test_folder)
 
-    # 3. post modified - modify title or content or content preview
-    def test_should_update_modified_post_1(self):
-        pass
-
-    # 3. post modified - modify category(tag)
-    def test_should_update_modified_post_2(self):
-        pass
+    # # 3. post modified - modify title or content or content preview
+    # def test_should_update_modified_post_1(self):
+    #     test_folder = self.setUp()
+    #     os.rmdir(test_folder)
+    # # 3. post modified - modify category(tag)
+    # def test_should_update_modified_post_2(self):
+    #     pass
 
 
 

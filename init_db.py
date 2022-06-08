@@ -98,8 +98,13 @@ class GetNewPost(GetPost):
 
 class InitializeDB(GetNewPost):
 
+    post_list = []
+
     def __init__(self):
         self.initialize_database()
+
+    def get_post_list(self):
+        return self.post_list
 
     def initialize_database(self):
 
@@ -125,6 +130,11 @@ class InitializeDB(GetNewPost):
                 new_post_date = self.make_new_date_from_given_date(date)
                 self.add_new_post_into_db(new_post_date)
 
+        initialized_post_list = self.get_post_list()
+        initialized_post_list.sort(key=lambda post: post.created, reverse=True)
+        for post in initialized_post_list:
+            db.session.add(post)
+            
         db.session.commit()
 
     def delete_all_posts_from_DB(self):
@@ -150,7 +160,7 @@ class InitializeDB(GetNewPost):
         new_post = Post(title=post_title, thumbnail_url=post_thumbnail_url, content=post_content, \
             content_preview=post_content_preview, created=post_created, tag=self.get_category())
 
-        db.session.add(new_post)
+        self.post_list.append(new_post)
 
 
 if __name__ == '__main__':

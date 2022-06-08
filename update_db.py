@@ -94,7 +94,7 @@ class UpdatePost(GetPost):
 
         # case 2. post deleted
         elif size_of_selected_category_db > size_of_selected_category_folder:
-            self.update_deleted_posts
+            self.update_deleted_posts()
 
         # case 3. new post uploaded
         else:
@@ -102,11 +102,17 @@ class UpdatePost(GetPost):
 
     def update_deleted_posts(self):
         # posts at db > posts at folder
-        set_posts_at_db = set(self.posts_at_db)
-        set_posts_at_folder = set(self.posts_at_folder)
+        category = self.get_category()
+        posts_at_folder = self.get_posts_at_folder()
+        posts_at_db = self.get_posts_list_at_selected_category_db(category).all()
 
-        deleted_posts = set_posts_at_db - set_posts_at_folder
-        deleted_posts = list(deleted_posts)
+        # looks dirty...
+        for post_1 in posts_at_folder:
+            for post_2 in posts_at_db:
+                if post_1.created == post_2.created:
+                    posts_at_db.remove(post_2)
+
+        deleted_posts = posts_at_db
 
         for post in deleted_posts:
             db.session.delete(post)
@@ -121,17 +127,22 @@ class UpdatePost(GetPost):
 
         for post in posts:
             date = post.created
-            edited_post = self.get_posts_list_at_selected_category_db(category)\
-                .filter_by(created=date)\
-                    .update(dict(title=post.title, content=post.content, content_preview=post.content_preview))
+            post_filtered_by_date = self.get_posts_list_at_selected_category_db(category).filter_by(created=date)
+            post_filtered_by_date.update(dict(title=post.title, content=post.content, content_preview=post.content_preview))
 
     def update_newly_uploaded_posts(self):
         # posts at db < posts at folder
-        set_posts_at_db = set(self.posts_at_db)
-        set_posts_at_folder = set(self.posts_at_folder)
+        category = self.get_category()
+        posts_at_folder = self.get_posts_at_folder()
+        posts_at_db = self.get_posts_list_at_selected_category_db(category).all()
 
-        added_posts = set_posts_at_folder - set_posts_at_db
-        added_posts = list(added_posts)
+        # looks dirty...
+        for post_1 in posts_at_db:
+            for post_2 in posts_at_folder:
+                if post_1.created == post_2.created:
+                    posts_at_folder.remove(post_2)
+
+        added_posts = posts_at_folder
 
         for post in added_posts:
             db.session.add(post)

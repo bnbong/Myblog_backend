@@ -1,3 +1,3 @@
 flask db upgrade
 python3 init_db.py
-python3 test.py
+python3 test.py Database_Test
