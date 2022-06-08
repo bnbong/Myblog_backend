@@ -2,12 +2,12 @@ from app.models import Post
 from app import db
 from datetime import datetime
 
-from init_db import GetPost
+from init_db import InitializeDB
 
 import os
 
 
-class UpdatePost(GetPost):
+class UpdatePost(InitializeDB):
 
     posts_at_db = []
     posts_at_folder = []
@@ -52,7 +52,9 @@ class UpdatePost(GetPost):
             all_selected_category_folder_posts = self.get_posts_list_at_selected_category_folder(category)
             self.set_posts_at_folder(all_selected_category_folder_posts)
 
-            self.compare_db_and_folder_and_update_posts()
+            self.compare_db_and_folder_then_update_posts()
+
+        self.make_posts_desc_by_date()
         
         db.session.commit()
 
@@ -84,7 +86,7 @@ class UpdatePost(GetPost):
 
         return post_list
 
-    def compare_db_and_folder_and_update_posts(self):
+    def compare_db_and_folder_then_update_posts(self):
         size_of_selected_category_db = len(self.get_posts_at_db())
         size_of_selected_category_folder = len(self.get_posts_at_folder())
 
@@ -145,6 +147,15 @@ class UpdatePost(GetPost):
         added_posts = posts_at_folder
 
         for post in added_posts:
+            db.session.add(post)
+
+    def make_posts_desc_by_date(self):
+        posts_list = Post.query.all()
+        posts_list.sort(key=lambda post: post.created, reverse=True)
+
+        self.delete_all_posts_from_DB()
+        
+        for post in posts_list:
             db.session.add(post)
 
 
