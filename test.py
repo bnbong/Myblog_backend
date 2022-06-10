@@ -169,9 +169,49 @@ class Database_Test(unittest.TestCase):
         all_posts = self.get_all_posts()
 
         print(all_posts)
-        print(self.posts)
+        print(self.posts) # boths prints only 4 posts. find out why
+        
+        self.assertEqual(5, len(all_posts))
+        
+        added_test_post = all_posts[-2]
+        
+        self.assertEqual('Test title for testing', added_test_post.title)
+        self.assertEqual('IT', added_test_post.tag)
+        self.assertEqual('This is test content', added_test_post.content)
+        self.assertEqual('This is test content..', added_test_post.content_preview)
+        
+    # db delete check
+    def test_could_delete_post_into_db(self):
+        added_post = self.test_could_add_post_into_db()
 
-    
+        ad.session.delete(added_post)
+
+        add_posts = self.get_all_posts()
+
+        self.assertEqual(4, len(all_posts))
+
+        selected_post = all_posts[-2]
+
+        self.assertEqual('Test title for testing', added_post.title)
+        self.assertEqual('IT', added_post.tag)
+        self.assertEqual('This is test content', added_post.content)
+        self.assertEqual('This is test content..', added_post.content_preview)
+
+    # db modifing check
+    def test_could_modify_post_at_db(self):
+        self.input_post_at_db()
+
+        selected_post = self.get_selected_post_by_title('Test title for testing')
+        new_content = 'This is new test content'
+
+        selected_post.update(dict(content=new_content))
+
+        all_posts = self.get_all_posts()
+        selected_post = self.get_selected_post_by_title('Test title for testing').first()
+
+        self.assertEqual(5, len(all_posts))
+        self.assertEqual('IT', selected_post.tag)
+        self.assertEqual('This is new test content', selected_post.content)
 
 
 
