@@ -118,6 +118,7 @@ class UpdatePost(InitializeDB):
             db.session.delete(post)
 
     def update_modified_posts(self):
+        import markdown
         # modified posts is located at folder
         # created time cannot be modified.
         # need to upgrade -> comment will disappear!
@@ -128,7 +129,7 @@ class UpdatePost(InitializeDB):
         for post in posts:
             date = post.created
             post_filtered_by_date = self.get_posts_list_at_selected_category_db(category).filter_by(created=date)
-            post_filtered_by_date.update(dict(title=post.title, content=post.content, content_preview=post.content_preview))
+            post_filtered_by_date.update(dict(title=post.title, content=markdown.markdown(post.content), content_preview=post.content_preview))
 
     def update_newly_uploaded_posts(self):
         # posts at db < posts at folder
