@@ -143,8 +143,9 @@ class Database_Test(DB_Testcase_Root):
         self.assertEqual(4, len(self.get_all_posts()))
 
         last_post = self.all_posts[-1]
-        
+
         self.assertEqual('About Me', last_post.title)
+        self.assertEqual(4, last_post.id)
         self.assertEqual(self.datetime(2000, 2, 10, 1, 13, 17), last_post.created)
         self.assertEqual('My_Daily_Life', last_post.tag)
         self.assertEqual('''<h1>Jun Hyeok Lee</h1>
@@ -181,6 +182,10 @@ class Database_Test(DB_Testcase_Root):
         self.assertEqual('IT', added_test_post.tag)
         self.assertEqual('<p>This is test content</p>', added_test_post.content)
         self.assertEqual('This is test content..', added_test_post.content_preview)
+
+        last_post = all_posts[-1]
+
+        self.assertEqual(4, last_post.id)
         
     # db delete check
     def test_could_delete_post_into_db(self):
@@ -202,6 +207,8 @@ class Database_Test(DB_Testcase_Root):
         self.assertNotEqual('<p>This is test content</p>', selected_post.content)
         self.assertNotEqual('This is test content..', selected_post.content_preview)
 
+        self.assertEqual(3, selected_post.id)
+
     # db modifing check
     def test_could_modify_post_at_db(self):
         self.test_could_add_post_into_db()
@@ -221,6 +228,10 @@ class Database_Test(DB_Testcase_Root):
         self.assertEqual(5, len(self.get_all_posts()))
         self.assertEqual('IT', selected_post.tag)
         self.assertEqual('<p>This is new test content</p>', selected_post.content)
+
+        last_post = self.all_posts[-1]
+
+        self.assertEqual(4, last_post.id)
 
     def tearDown(self):
         if os.path.exists('../Myblog_backend/app.db-journal'):
@@ -283,8 +294,6 @@ class ModifingDB_Test(DB_Testcase_Root):
 
         self.make_new_post()
 
-        self.InitializeDB()
-
         self.assertEqual(3, len(Post.query.filter_by(tag=self.category).all()))
 
         # remove post
@@ -292,26 +301,25 @@ class ModifingDB_Test(DB_Testcase_Root):
 
         self.UpdatePost()
 
+        self.assertEqual(4, Post.query.filter_by(title='About Me').first().id)
         self.assertEqual(2, len(Post.query.filter_by(tag=self.category).all()))
 
     # 2. post created
     def test_should_update_created_post(self):
-        from update_db import UpdatePost
-
 
         self.make_new_post()
 
-        UpdatePost()
+        self.UpdatePost()
 
         self.assertEqual(5, len(Post.query.all()))
 
     # 3. post modified - modify title or content or content preview
     def test_should_update_modified_post_1(self):
-        pass
+        self.assertEqual(4, Post.query.filter_by(title='About Me').first().id)
     
     # 3. post modified - modify category(tag)
     def test_should_update_modified_post_2(self):
-        pass
+        self.assertEqual(4, Post.query.filter_by(title='About Me').first().id)
 
     def tearDown(self):
         if self.os.path.exists(self.test_folder):
