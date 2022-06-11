@@ -54,7 +54,7 @@ class UpdatePost(InitializeDB):
 
             self.compare_db_and_folder_then_update_posts()
 
-        self.make_posts_desc_by_date()
+        # self.make_posts_desc_by_date()
         
         db.session.commit()
 
@@ -149,13 +149,13 @@ class UpdatePost(InitializeDB):
         for post in added_posts:
             db.session.add(post)
 
-    def make_posts_desc_by_date(self):
-        posts_list = Post.query.order_by(Post.created.desc()).all()
+    # def make_posts_desc_by_date(self):
+    #     posts_list = Post.query.order_by(Post.created.desc()).all()
 
-        self.delete_all_posts_from_DB()
+    #     # self.delete_all_posts_from_DB()
         
-        for post in posts_list:
-            db.session.add(post)
+    #     # for post in posts_list:
+    #     #     db.session.add(post)
 
 
 if __name__ == '__main__':
