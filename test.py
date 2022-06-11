@@ -85,19 +85,25 @@ class Markdown_Test(unittest.TestCase):
 </div>''', converted_text)
 
 
-#TODO: improve codes -> make code to check all Myblog_posts' data is at db.
-class Database_Test(unittest.TestCase):
+class DB_Testcase_Root(unittest.TestCase):
     from app.models import Post
     from app import db
 
     from datetime import datetime
 
-    # 쟁점: 메인 db로 사용되는 app.db가 아니라 testcase 용도로 따로 .db파일을 파서 사용할 수 있는가.
+    import os
+    import markdown
 
-    test_post = None
-    all_posts = Post.query.order_by(Post.created.desc()).all()
+class Database_Test(DB_Testcase_Root):
+    from app.models import Post
+    from app import db
+
+    from datetime import datetime
+
+
     def setUp(self):
-        self.posts = Post.query.order_by(Post.created.desc()).all() # update_db.py 코드도 해당코드로 변경?
+        self.test_post = self.input_post_at_db()
+        self.all_posts = Post.query.order_by(Post.created.desc()).all()  # update_db.py 코드도 해당코드로 변경?
 
     def get_test_post(self):
         return self.test_post
@@ -106,7 +112,7 @@ class Database_Test(unittest.TestCase):
         return self.all_posts
 
     def get_selected_post_by_title(self, title):
-        return Post.query.filter_by(title=title).first()
+        return Post.query.filter_by(title=title)
 
     def set_all_posts(self, all_posts):
         self.all_posts = all_posts
@@ -125,23 +131,22 @@ class Database_Test(unittest.TestCase):
 
         test_post = Post(title=test_title, tag=test_tag, content=test_content, \
             content_preview=test_content_preview, created=test_created)
-        self.set_test_post(test_post)
-
-        db.session.add(test_post)
-        self.set_all_posts(Post.query.all())
 
         return test_post
+
+    def insert_post_at_db(self, post):
+        db.session.add(post)
+        self.set_all_posts(Post.query.order_by(Post.created.desc()).all())
 
     # init db check
     def test_could_get_all_posts_is_at_db(self):
         self.assertEqual(4, len(self.get_all_posts()))
 
-        last_post = self.posts[-1]
+        last_post = self.all_posts[-1]
         
         self.assertEqual('About Me', last_post.title)
         self.assertEqual(self.datetime(2000, 2, 10, 1, 13, 17), last_post.created)
         self.assertEqual('My_Daily_Life', last_post.tag)
-        # self.assertEqual(first, second)
         self.assertEqual('''<h1>Jun Hyeok Lee</h1>
 <h2>👋 Hello world!</h2>
 <ul>
@@ -159,17 +164,14 @@ class Database_Test(unittest.TestCase):
     # db input check
     def test_could_add_post_into_db(self):
 
-        self.assertEqual(None, self.get_test_post())
+        added_post = self.get_test_post()
 
-        added_post = self.input_post_at_db()
+        self.insert_post_at_db(added_post)
 
         self.assertEqual(self.get_test_post(), added_post)
 
-        self.set_all_posts(self.posts)
+        self.set_all_posts(self.Post.query.order_by(Post.created.desc()).all())
         all_posts = self.get_all_posts()
-
-        print(all_posts)
-        print(self.posts) # boths prints only 4 posts. find out why
         
         self.assertEqual(5, len(all_posts))
         
@@ -177,106 +179,88 @@ class Database_Test(unittest.TestCase):
         
         self.assertEqual('Test title for testing', added_test_post.title)
         self.assertEqual('IT', added_test_post.tag)
-        self.assertEqual('This is test content', added_test_post.content)
+        self.assertEqual('<p>This is test content</p>', added_test_post.content)
         self.assertEqual('This is test content..', added_test_post.content_preview)
         
     # db delete check
     def test_could_delete_post_into_db(self):
-        added_post = self.test_could_add_post_into_db()
 
-        ad.session.delete(added_post)
+        self.assertEqual(5, len(self.get_all_posts()))
 
-        add_posts = self.get_all_posts()
+        added_post = self.get_selected_post_by_title('Test title for testing')
 
-        self.assertEqual(4, len(all_posts))
+        db.session.delete(added_post.first())
 
-        selected_post = all_posts[-2]
+        self.set_all_posts(Post.query.order_by(Post.created.desc()).all())
 
-        self.assertEqual('Test title for testing', added_post.title)
-        self.assertEqual('IT', added_post.tag)
-        self.assertEqual('This is test content', added_post.content)
-        self.assertEqual('This is test content..', added_post.content_preview)
+        self.assertEqual(4, len(self.get_all_posts()))
+
+        selected_post = self.get_all_posts()[-2]
+
+        self.assertNotEqual('Test title for testing', selected_post.title)
+        self.assertNotEqual('IT', selected_post.tag)
+        self.assertNotEqual('<p>This is test content</p>', selected_post.content)
+        self.assertNotEqual('This is test content..', selected_post.content_preview)
 
     # db modifing check
     def test_could_modify_post_at_db(self):
-        self.input_post_at_db()
+        self.test_could_add_post_into_db()
+
+        self.assertEqual(5, len(self.get_all_posts()))
 
         selected_post = self.get_selected_post_by_title('Test title for testing')
         new_content = 'This is new test content'
+        new_content = markdown.markdown(new_content)
+
+        self.assertEqual('<p>This is test content</p>', selected_post.first().content)
 
         selected_post.update(dict(content=new_content))
 
-        all_posts = self.get_all_posts()
         selected_post = self.get_selected_post_by_title('Test title for testing').first()
 
-        self.assertEqual(5, len(all_posts))
+        self.assertEqual(5, len(self.get_all_posts()))
         self.assertEqual('IT', selected_post.tag)
-        self.assertEqual('This is new test content', selected_post.content)
+        self.assertEqual('<p>This is new test content</p>', selected_post.content)
+
+    def tearDown(self):
+        if os.path.exists('../Myblog_backend/app.db-journal'):
+            print('delete journal file')
+            os.remove('../Myblog_backend/app.db-journal')
 
 
-
-class ModifingDB_Test(unittest.TestCase):
-    from app.models import Post
-    from app import db
-
+class ModifingDB_Test(DB_Testcase_Root):
+    from init_db import InitializeDB
+    from update_db import UpdatePost
     from datetime import datetime
 
-    import os
-    import markdown
-    
-    post_dir = os.path.abspath('../Myblog_posts/posts')
-    category = 'Development'
-    date = None
+    import shutil
 
-    category_dir = os.path.join(post_dir, category)
-
-    test_folder = None
-
-    # first_post_date = os.listdir(category_dir)[0]
-
-    # post_location = os.path.join(category_dir, first_post_date)
-
-    # thumbnail_url_file, title_file, content_file = \
-    #         os.listdir(post_dir)[0], os.listdir(post_dir)[1], os.listdir(post_dir)[2]
 
     def setUp(self):
-        from init_db import InitializeDB
-        from datetime import datetime
+
+        self.post_dir = os.path.abspath('../Myblog_posts/posts')
+        self.category = 'Development'
+        self.date = None
+        self.category_dir = os.path.join(self.post_dir, self.category)
         
 
-        test_created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        test_created = self.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         test_date, test_time = test_created.split()
         Y, M, D = test_date.split('-')
         H, m, S = test_time.split(':')
 
-        test_created_folder = Y+M+D+H+m+S
+        self.test_created_folder = Y+M+D+H+m+S
 
-        test_folder = os.path.join(self.category_dir, test_created_folder)
+        test_folder = os.path.join(self.category_dir, self.test_created_folder)
         self.test_folder = test_folder
 
-        posts_before_adding = Post.query.all()
-
-        return posts_before_adding, test_folder, test_created_folder
-        # os.mkdir(os.path.join(self.category_dir, test_created_folder))
-        # print(test_created_folder)
+        self.posts_before_adding = Post.query.all()
 
     def make_new_post(self):
-        from init_db import InitializeDB
-        from datetime import datetime
 
-        test_created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        test_date, test_time = test_created.split()
-        Y, M, D = test_date.split('-')
-        H, m, S = test_time.split(':')
-
-        test_created_folder = Y+M+D+H+m+S
-
-        test_folder = os.path.join(self.category_dir, test_created_folder)
-        self.test_folder = test_folder
-
-        if not os.path.exists(test_folder):
+        if not os.path.exists(self.test_folder):
             # make post folder
-            os.mkdir(test_folder)
+            os.mkdir(self.test_folder)
 
             test_title = 'This is Test title'
             test_url = 'https://thisistest.test/'
@@ -284,9 +268,9 @@ class ModifingDB_Test(unittest.TestCase):
             test_content = 'Hello world this is test content'
             test_content_preview = 'Hello world th..'
 
-            self.make_file(os.path.join(test_folder, 'title.txt'), test_title)
-            self.make_file(os.path.join(test_folder, 'thumbnail.txt'), test_url)
-            self.make_file(os.path.join(test_folder, 'post.md'), test_content)
+            self.make_file(os.path.join(self.test_folder, 'title.txt'), test_title)
+            self.make_file(os.path.join(self.test_folder, 'thumbnail.txt'), test_url)
+            self.make_file(os.path.join(self.test_folder, 'post.md'), test_content)
 
     def make_file(self, file_name, content):
         with open(file_name, 'w') as f:
@@ -296,20 +280,17 @@ class ModifingDB_Test(unittest.TestCase):
     # TODO: should write update_db testcases
     # 1. post deleted
     def test_should_update_deleted_post(self):
-        import shutil
-        from init_db import InitializeDB
-        from update_db import UpdatePost
 
         self.make_new_post()
 
-        InitializeDB()
+        self.InitializeDB()
 
         self.assertEqual(3, len(Post.query.filter_by(tag=self.category).all()))
 
         # remove post
-        shutil.rmtree(self.test_folder)
+        self.shutil.rmtree(self.test_folder)
 
-        UpdatePost()
+        self.UpdatePost()
 
         self.assertEqual(2, len(Post.query.filter_by(tag=self.category).all()))
 
@@ -324,9 +305,6 @@ class ModifingDB_Test(unittest.TestCase):
 
         self.assertEqual(5, len(Post.query.all()))
 
-        import shutil
-        shutil.rmtree(self.test_folder)
-
     # 3. post modified - modify title or content or content preview
     def test_should_update_modified_post_1(self):
         pass
@@ -335,9 +313,12 @@ class ModifingDB_Test(unittest.TestCase):
     def test_should_update_modified_post_2(self):
         pass
 
+    def tearDown(self):
+        if self.os.path.exists(self.test_folder):
+            self.shutil.rmtree(self.test_folder)
 
 
-class InitDB_Test(unittest.TestCase):
+class InitDB_Test(DB_Testcase_Root):
     import init_db
 
     def test_could_get_posts(self):
@@ -357,7 +338,9 @@ class InitDB_Test(unittest.TestCase):
         post1 = Post.query.filter_by(title='About Me')
 
         post2 = post1.filter_by(tag='My_Daily_Life')
-        print(post2.all())
+
+        self.assertEqual('About Me', post2.first().title)
+
 
 class Util_Test(unittest.TestCase):
     
@@ -420,9 +403,6 @@ class Util_Test(unittest.TestCase):
         # that two date will not same
         self.assertNotEqual(post_file_time, selected_post_file_time)
 
-
-class Server_Test(unittest.TestCase):
-    pass
 
 if __name__ == '__main__':
     unittest.main()

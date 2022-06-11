@@ -150,8 +150,7 @@ class UpdatePost(InitializeDB):
             db.session.add(post)
 
     def make_posts_desc_by_date(self):
-        posts_list = Post.query.all()
-        posts_list.sort(key=lambda post: post.created, reverse=True)
+        posts_list = Post.query.order_by(Post.created.desc()).all()
 
         self.delete_all_posts_from_DB()
         
