@@ -95,11 +95,6 @@ class DB_Testcase_Root(unittest.TestCase):
     import markdown
 
 class Database_Test(DB_Testcase_Root):
-    from app.models import Post
-    from app import db
-
-    from datetime import datetime
-
 
     def setUp(self):
         self.test_post = self.input_post_at_db()
@@ -235,17 +230,18 @@ class Database_Test(DB_Testcase_Root):
 
     def tearDown(self):
         if os.path.exists('../Myblog_backend/app.db-journal'):
-            print('delete journal file')
+            print('delete journal file\n')
             os.remove('../Myblog_backend/app.db-journal')
 
 
 class ModifingDB_Test(DB_Testcase_Root):
     from init_db import InitializeDB
     from update_db import UpdatePost
-    from datetime import datetime
 
     import shutil
 
+    SQLALCHEMY_DATABASE_URI = "sqlite://" 
+    TESTING = True
 
     def setUp(self):
 
