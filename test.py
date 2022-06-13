@@ -1,4 +1,3 @@
-#TODO: fix bug that when run python test.py returns error but does not when run modules manually.
 import unittest
 from app.routes import *
 
