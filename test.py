@@ -396,6 +396,9 @@ class InitDB_Test(DB_Testcase_Root):
         posts = Post.query.all()
 
         self.assertEqual(4, len(posts))
+        
+        for i in range(0, len(posts)):
+            self.assertEqual(i+1, posts[i].id)
 
     def test_could_get_aboutme(self):
         from datetime import datetime
