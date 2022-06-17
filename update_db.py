@@ -78,7 +78,7 @@ class UpdatePost(InitializeDB):
             post_created = datetime(year, month, day, hour, minute, sec)
 
             post = Post(title=post_title, thumbnail_url=post_thumbnail_url, content=post_content, \
-            content_preview=post_content_preview, created=post_created, tag=category)
+                content_preview=post_content_preview, created=post_created, tag=category)
 
             post_list.append(post)
 

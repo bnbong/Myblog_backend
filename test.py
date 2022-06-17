@@ -93,6 +93,45 @@ class DB_Testcase_Root(unittest.TestCase):
     import os
     import markdown
 
+    def setUp(self):
+
+        self.post_dir = os.path.abspath('../Myblog_posts/posts')
+        self.category = 'Development'
+        self.date = None
+        self.category_dir = os.path.join(self.post_dir, self.category)
+        
+
+        test_created = self.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        test_date, test_time = test_created.split()
+        Y, M, D = test_date.split('-')
+        H, m, S = test_time.split(':')
+
+        self.test_created_folder = Y+M+D+H+m+S
+
+        test_folder = os.path.join(self.category_dir, self.test_created_folder)
+        self.test_folder = test_folder
+
+    def make_new_post(self):
+
+        if not os.path.exists(self.test_folder):
+            # make post folder
+            os.mkdir(self.test_folder)
+
+            test_title = 'This is Test title'
+            test_url = 'https://thisistest.test/'
+            test_category = self.category
+            test_content = 'Hello world this is test content'
+            test_content_preview = 'Hello world th..'
+
+            self.make_file(os.path.join(self.test_folder, 'title.txt'), test_title)
+            self.make_file(os.path.join(self.test_folder, 'thumbnail.txt'), test_url)
+            self.make_file(os.path.join(self.test_folder, 'post.md'), test_content)
+
+    def make_file(self, file_name, content):
+        with open(file_name, 'w') as f:
+            f.write(content)
+            f.close()
+
 class Database_Test(DB_Testcase_Root):
 
     def setUp(self):
@@ -239,55 +278,15 @@ class ModifingDB_Test(DB_Testcase_Root):
 
     import shutil
 
-    SQLALCHEMY_DATABASE_URI = "sqlite://" 
     TESTING = True
-
-    def setUp(self):
-
-        self.post_dir = os.path.abspath('../Myblog_posts/posts')
-        self.category = 'Development'
-        self.date = None
-        self.category_dir = os.path.join(self.post_dir, self.category)
-        
-
-        test_created = self.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        test_date, test_time = test_created.split()
-        Y, M, D = test_date.split('-')
-        H, m, S = test_time.split(':')
-
-        self.test_created_folder = Y+M+D+H+m+S
-
-        test_folder = os.path.join(self.category_dir, self.test_created_folder)
-        self.test_folder = test_folder
-
-        self.posts_before_adding = Post.query.all()
-
-    def make_new_post(self):
-
-        if not os.path.exists(self.test_folder):
-            # make post folder
-            os.mkdir(self.test_folder)
-
-            test_title = 'This is Test title'
-            test_url = 'https://thisistest.test/'
-            test_category = self.category
-            test_content = 'Hello world this is test content'
-            test_content_preview = 'Hello world th..'
-
-            self.make_file(os.path.join(self.test_folder, 'title.txt'), test_title)
-            self.make_file(os.path.join(self.test_folder, 'thumbnail.txt'), test_url)
-            self.make_file(os.path.join(self.test_folder, 'post.md'), test_content)
-
-    def make_file(self, file_name, content):
-        with open(file_name, 'w') as f:
-            f.write(content)
-            f.close()
 
     # TODO: should write update_db testcases
     # 1. post deleted
     def test_should_update_deleted_post(self):
 
         self.make_new_post()
+
+        self.UpdatePost()
 
         self.assertEqual(3, len(Post.query.filter_by(tag=self.category).all()))
 
@@ -310,11 +309,80 @@ class ModifingDB_Test(DB_Testcase_Root):
 
     # 3. post modified - modify title or content or content preview
     def test_should_update_modified_post_1(self):
+
+        self.make_new_post()
+
+        self.UpdatePost()
+
+        new_post = Post.query.filter_by(title='This is Test title').first()
+
+        self.assertEqual(5, new_post.id)
         self.assertEqual(4, Post.query.filter_by(title='About Me').first().id)
+
+
+        modified_content = 'the content has modified!'
+
+        self.make_file(os.path.join(self.test_folder, 'post.md'), modified_content)
+
+        self.UpdatePost()
+
+        new_post = Post.query.filter_by(title='This is Test title').first()
+
+        self.assertEqual(5, new_post.id)
+        self.assertEqual('<p>the content has modified!</p>', new_post.content)
     
+    def tearDown(self):
+        if self.os.path.exists(self.test_folder):
+            self.shutil.rmtree(self.test_folder)
+
+        self.UpdatePost()
+
+
+class ModifingDB_Test_2(DB_Testcase_Root):
+    # This testcase will cause DB instance mismatch, don't run at live environment!
+    from init_db import InitializeDB
+    from update_db import UpdatePost
+
+    import shutil
+
+    SQLALCHEMY_DATABASE_URI = "sqlite://" 
+    TESTING = True
+
     # 3. post modified - modify category(tag)
     def test_should_update_modified_post_2(self):
+        import shutil
+        
+        self.make_new_post()
+
+        self.UpdatePost()
+
+        new_post = Post.query.filter_by(title='This is Test title').first()
+
+        self.assertEqual(5, new_post.id)
         self.assertEqual(4, Post.query.filter_by(title='About Me').first().id)
+
+        source_files = os.listdir(self.test_folder)
+
+        new_category = 'IT'
+        new_category_folder = os.path.join(self.post_dir, new_category)
+        new_post_folder = os.path.join(new_category_folder, self.test_created_folder)
+
+        os.mkdir(new_category_folder)
+        os.mkdir(new_post_folder)
+        for file in source_files:
+            shutil.move(os.path.join(self.test_folder, file), new_post_folder)
+        shutil.rmtree(self.test_folder)
+
+        self.UpdatePost()
+
+        self.assertEqual(2, len(Post.query.filter_by(tag='Development').all()))
+        self.assertEqual(1, len(Post.query.filter_by(tag='IT').all()))
+        self.assertEqual(5, Post.query.filter_by(title='This is Test title').first().id)
+        self.assertEqual(5, len(Post.query.all()))
+        self.assertEqual('IT', Post.query.all()[-1].tag)
+
+        if self.os.path.exists(new_category_folder):
+            shutil.rmtree(new_category_folder)
 
     def tearDown(self):
         if self.os.path.exists(self.test_folder):
