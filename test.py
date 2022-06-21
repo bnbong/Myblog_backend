@@ -136,7 +136,7 @@ class Database_Test(DB_Testcase_Root):
 
     def setUp(self):
         self.test_post = self.input_post_at_db()
-        self.all_posts = Post.query.order_by(Post.created.desc()).all()  # update_db.py 코드도 해당코드로 변경?
+        self.all_posts = Post.query.order_by(Post.created.desc()).all()
 
     def get_test_post(self):
         return self.test_post

@@ -67,11 +67,3 @@ def postview(post_id):
 #         return redirect(url_for('index'))
 
 #     return render_template('create.html')
-
-# @app.route('/<int:id>/edit', methods=('GET', 'POST'))
-# def edit(id):
-#     pass
-
-# @app.route('/<int:id>/delete/', methods=('POST',))
-# def delete(id):
-#     pass
