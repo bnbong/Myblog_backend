@@ -7,7 +7,11 @@ class Dotenv_Test(unittest.TestCase):
     def test_could_load_SECRET_KEY_from_env(self):
         from config import Config
 
-        self.assertEqual('10308431c9df4dca98a308187f0c6b74', app.config['SECRET_KEY'])
+        with open('.env', 'r') as f:
+            _, secret_key_from_env = (f.read()).split('=')
+            secret_key_from_env = secret_key_from_env[2:-1]
+
+        self.assertEqual(secret_key_from_env, app.config['SECRET_KEY'])
 
 class Markdown_Test(unittest.TestCase):
 
