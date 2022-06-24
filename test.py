@@ -284,7 +284,6 @@ class ModifingDB_Test(DB_Testcase_Root):
 
     TESTING = True
 
-    # TODO: should write update_db testcases
     # 1. post deleted
     def test_should_update_deleted_post(self):
 
