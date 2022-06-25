@@ -121,7 +121,6 @@ class UpdatePost(InitializeDB):
         import markdown
         # modified posts is located at folder
         # created time cannot be modified.
-        # need to upgrade -> comment will disappear!
         category = self.get_category()
 
         posts = self.get_posts_at_folder()
