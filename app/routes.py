@@ -38,7 +38,6 @@ def aboutme():
 
 @app.route('/posts/<post_id>')
 def postview(post_id):
-    # posts = get_posts()
     post_id = int(post_id)
     selected_post = Post.query.filter_by(id=post_id).first()
 
