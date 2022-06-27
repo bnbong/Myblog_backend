@@ -106,7 +106,6 @@ class UpdatePost(InitializeDB):
         posts_at_folder = self.get_posts_at_folder()
         posts_at_db = self.get_posts_list_at_selected_category_db(category).all()
 
-        # looks dirty...
         for post_1 in posts_at_folder:
             for post_2 in posts_at_db:
                 if post_1.created == post_2.created:
@@ -136,7 +135,6 @@ class UpdatePost(InitializeDB):
         posts_at_folder = self.get_posts_at_folder()
         posts_at_db = self.get_posts_list_at_selected_category_db(category).all()
 
-        # looks dirty...
         for post_1 in posts_at_db:
             for post_2 in posts_at_folder:
                 if post_1.created == post_2.created:

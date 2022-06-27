@@ -291,15 +291,18 @@ class ModifingDB_Test(DB_Testcase_Root):
 
         self.UpdatePost()
 
-        self.assertEqual(3, len(Post.query.filter_by(tag=self.category).all()))
+        self.category_posts_length = len(Post.query.filter_by(tag=self.category).all())
+        self.assertEqual(self.category_posts_length, len(Post.query.filter_by(tag=self.category).all()))
 
         # remove post
         self.shutil.rmtree(self.test_folder)
 
         self.UpdatePost()
 
-        self.assertEqual(4, Post.query.filter_by(title='About Me').first().id)
-        self.assertEqual(2, len(Post.query.filter_by(tag=self.category).all()))
+        self.about_me_post_id = Post.query.filter_by(title='About Me').first().id
+        self.category_posts_length = len(Post.query.filter_by(tag=self.category).all())
+        self.assertEqual(self.about_me_post_id, Post.query.filter_by(title='About Me').first().id)
+        self.assertEqual(self.category_posts_length, len(Post.query.filter_by(tag=self.category).all()))
 
     # 2. post created
     def test_should_update_created_post(self):
@@ -308,7 +311,9 @@ class ModifingDB_Test(DB_Testcase_Root):
 
         self.UpdatePost()
 
-        self.assertEqual(5, len(Post.query.all()))
+        self.all_post_length = len(Post.query.all())
+
+        self.assertEqual(self.all_post_length, len(Post.query.all()))
 
     # 3. post modified - modify title or content or content preview
     def test_should_update_modified_post_1(self):
@@ -317,10 +322,13 @@ class ModifingDB_Test(DB_Testcase_Root):
 
         self.UpdatePost()
 
+        self.new_post_id = Post.query.filter_by(title='This is Test title').first().id
+        self.about_me_post_id = Post.query.filter_by(title='About Me').first().id
+
         new_post = Post.query.filter_by(title='This is Test title').first()
 
-        self.assertEqual(5, new_post.id)
-        self.assertEqual(4, Post.query.filter_by(title='About Me').first().id)
+        self.assertEqual(self.new_post_id, new_post.id)
+        self.assertEqual(self.about_me_post_id, Post.query.filter_by(title='About Me').first().id)
 
 
         modified_content = 'the content has modified!'
@@ -331,7 +339,7 @@ class ModifingDB_Test(DB_Testcase_Root):
 
         new_post = Post.query.filter_by(title='This is Test title').first()
 
-        self.assertEqual(5, new_post.id)
+        self.assertEqual(self.new_post_id, new_post.id)
         self.assertEqual('<p>the content has modified!</p>', new_post.content)
     
     def tearDown(self):
