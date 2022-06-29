@@ -138,9 +138,14 @@ class DB_Testcase_Root(unittest.TestCase):
 
 class Database_Test(DB_Testcase_Root):
 
+    ALL_POST_LENGTH = 0
+    LAST_POST_ID = 0
+    SELECTED_POST_ID = 0
+
     def setUp(self):
         self.test_post = self.input_post_at_db()
         self.all_posts = Post.query.order_by(Post.created.desc()).all()
+        self.inserting_default_number()
 
     def get_test_post(self):
         return self.test_post
@@ -175,32 +180,30 @@ class Database_Test(DB_Testcase_Root):
         db.session.add(post)
         self.set_all_posts(Post.query.order_by(Post.created.desc()).all())
 
+    def inserting_default_number(self):
+        self.ALL_POST_LENGTH = len(self.get_all_posts())
+        self.LAST_POST_ID = self.all_posts[-1].id
+        self.SELECTED_POST_ID = self.get_all_posts()[-2].id
+        
+        self.assertNotEqual(0, self.ALL_POST_LENGTH)
+        self.assertNotEqual(0, self.LAST_POST_ID)
+        self.assertNotEqual(0, self.SELECTED_POST_ID)
+
     # init db check
     def test_could_get_all_posts_is_at_db(self):
-        self.assertEqual(4, len(self.get_all_posts()))
+        self.assertEqual(self.ALL_POST_LENGTH, len(self.get_all_posts()))
 
         last_post = self.all_posts[-1]
 
         self.assertEqual('About Me', last_post.title)
-        self.assertEqual(4, last_post.id)
+        self.assertEqual(self.LAST_POST_ID, last_post.id)
         self.assertEqual(self.datetime(2000, 2, 10, 1, 13, 17), last_post.created)
         self.assertEqual('My_Daily_Life', last_post.tag)
         self.assertEqual('''<h1>Jun Hyeok Lee</h1>
-<h2>👋 Hello world!</h2>
-<ul>
-<li>Born on 2000/02/10</li>
-<li>Male</li>
-<li>Living in Pangyo, Bundang-gu, Gyeonggi-do, South Korea</li>
-<li>Love playing Game, Guitar and coding!   </li>
-</ul>
-<hr />
-<ul>
-<li>한양대학교 ERICA 소프트웨어학부 19학번 (2019.03.02 ~ )</li>
-<li>대한민국 공군 ROKAF 병 825기 정보체계관리(30010 과정) (2..</li>
-</ul>''', last_post.content_preview)
+<h2>👋 Hello world!</h2>''', last_post.content_preview[:46])
 
     # db input check
-    def test_could_add_post_into_db(self):
+    def add_post_into_db(self):
 
         added_post = self.get_test_post()
 
@@ -211,7 +214,7 @@ class Database_Test(DB_Testcase_Root):
         self.set_all_posts(self.Post.query.order_by(Post.created.desc()).all())
         all_posts = self.get_all_posts()
         
-        self.assertEqual(5, len(all_posts))
+        self.assertEqual(self.ALL_POST_LENGTH+1, len(all_posts))
         
         added_test_post = all_posts[-2]
         
@@ -222,12 +225,12 @@ class Database_Test(DB_Testcase_Root):
 
         last_post = all_posts[-1]
 
-        self.assertEqual(4, last_post.id)
+        self.assertEqual(self.LAST_POST_ID, last_post.id)
         
     # db delete check
     def test_could_delete_post_into_db(self):
 
-        self.assertEqual(5, len(self.get_all_posts()))
+        self.assertEqual(self.ALL_POST_LENGTH, len(self.get_all_posts()))
 
         added_post = self.get_selected_post_by_title('Test title for testing')
 
@@ -235,7 +238,7 @@ class Database_Test(DB_Testcase_Root):
 
         self.set_all_posts(Post.query.order_by(Post.created.desc()).all())
 
-        self.assertEqual(4, len(self.get_all_posts()))
+        self.assertEqual(self.ALL_POST_LENGTH-1, len(self.get_all_posts()))
 
         selected_post = self.get_all_posts()[-2]
 
@@ -244,13 +247,13 @@ class Database_Test(DB_Testcase_Root):
         self.assertNotEqual('<p>This is test content</p>', selected_post.content)
         self.assertNotEqual('This is test content..', selected_post.content_preview)
 
-        self.assertEqual(3, selected_post.id)
+        self.assertEqual(self.SELECTED_POST_ID-2, selected_post.id)
 
     # db modifing check
-    def test_could_modify_post_at_db(self):
-        self.test_could_add_post_into_db()
+    def test_could_add_and_modify_post_at_db(self):
+        self.add_post_into_db()
 
-        self.assertEqual(5, len(self.get_all_posts()))
+        self.assertEqual(self.ALL_POST_LENGTH+1, len(self.get_all_posts()))
 
         selected_post = self.get_selected_post_by_title('Test title for testing')
         new_content = 'This is new test content'
@@ -262,13 +265,13 @@ class Database_Test(DB_Testcase_Root):
 
         selected_post = self.get_selected_post_by_title('Test title for testing').first()
 
-        self.assertEqual(5, len(self.get_all_posts()))
+        self.assertEqual(self.ALL_POST_LENGTH+1, len(self.get_all_posts()))
         self.assertEqual('IT', selected_post.tag)
         self.assertEqual('<p>This is new test content</p>', selected_post.content)
 
         last_post = self.all_posts[-1]
 
-        self.assertEqual(4, last_post.id)
+        self.assertEqual(self.LAST_POST_ID, last_post.id)
 
     def tearDown(self):
         if os.path.exists('../Myblog_backend/app.db-journal'):
