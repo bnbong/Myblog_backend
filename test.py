@@ -1,3 +1,4 @@
+# TODO: make test category & dummy posts for testing.
 import unittest
 from app.routes import *
 
@@ -359,7 +360,6 @@ class ModifingDB_Test_2(DB_Testcase_Root):
 
     import shutil
 
-    SQLALCHEMY_DATABASE_URI = "sqlite://" 
     TESTING = True
 
     # 3. post modified - modify category(tag)
@@ -438,7 +438,7 @@ class Util_Test(unittest.TestCase):
 
         develop_category_folder = os.path.join(post_dir, 'Development')
 
-        self.assertEqual(2, len(os.listdir(develop_category_folder)))
+        self.assertEqual(3, len(os.listdir(develop_category_folder)))
         print(os.listdir(develop_category_folder))
 
     def test_could_print_difference_of_two_lists(self):
