@@ -35,6 +35,12 @@ class Markdown_Test(unittest.TestCase):
 <img src="https://img.shields.io/badge/Android%20Studio-FFFFFF?style=flat-square&logo=Android%20Studio"/>
 </div>
         '''
+        self.table_Text = '''
+|title|content|description|
+|------|---|---|
+|test1|test2|test3|
+|test1|test2|test3|
+'''
 
     def test_could_convert_md_to_html(self):
         converted_text = markdown.markdown(self.markdown_text)
@@ -87,6 +93,35 @@ class Markdown_Test(unittest.TestCase):
 <div>
 <img src="https://img.shields.io/badge/Android%20Studio-FFFFFF?style=flat-square&logo=Android%20Studio"/>
 </div>''', converted_text)
+
+    def test_is_table_function_work(self):
+        converted_text = markdown.markdown(self.table_Text)
+
+        correct_text = '''
+<table>
+    <thead>
+        <tr>
+            <th>title</th>
+            <th>content</th>
+            <th>description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>test1</td>
+            <td>test2</td>
+            <td>test3</td>
+        </tr>
+        <tr>
+            <td>test1</td>
+            <td>test2</td>
+            <td>test3</td>
+        </tr>
+    </tbody>
+</table>'''
+
+        # this framework will show you just <p> tagged text, not table.
+        self.assertNotEqual(converted_text, correct_text)
 
 
 class DB_Testcase_Root(unittest.TestCase):
