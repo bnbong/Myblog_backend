@@ -123,6 +123,9 @@ class Markdown_Test(unittest.TestCase):
         # this framework will show you just <p> tagged text, not table.
         self.assertNotEqual(converted_text, correct_text)
 
+    def test_is_code_block_work(self):
+        pass
+
 
 class DB_Testcase_Root(unittest.TestCase):
     from app.models import Post
