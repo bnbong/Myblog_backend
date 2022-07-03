@@ -124,7 +124,31 @@ class Markdown_Test(unittest.TestCase):
         self.assertNotEqual(converted_text, correct_text)
 
     def test_is_code_block_work(self):
-        pass
+        short_code_block_text = "```this is code block```"
+
+        converted_text = markdown.markdown(short_code_block_text)
+
+        self.assertEqual(converted_text, "<p><code>this is code block</code></p>")
+        
+        long_code_block_text = """```#include <stdio.h>
+
+int main() {
+    println("hello world!\n");
+
+    return 0;
+}```"""
+
+        converted_text = markdown.markdown(long_code_block_text)
+        correct_text = '''<p><code>#include <stdio.h>
+
+int main() {
+    println("hello world!\n");
+
+    return 0;
+}</code></p>'''
+
+        # markdown library could not convert long & many blanked code to code block.
+        self.assertNotEqual(converted_text, correct_text)
 
 
 class DB_Testcase_Root(unittest.TestCase):
