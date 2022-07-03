@@ -128,6 +128,7 @@ class Markdown_Test(unittest.TestCase):
 
         converted_text = markdown.markdown(short_code_block_text)
 
+        # short code block can be converted properly.
         self.assertEqual(converted_text, "<p><code>this is code block</code></p>")
         
         long_code_block_text = """```#include <stdio.h>
