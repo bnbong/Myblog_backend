@@ -34,7 +34,3 @@ backend-side of blog project wriiten with Python Flask
 
 ## Domain
  - using [www.pythonanywhere.com](https://www.pythonanywhere.com/)
-
-## code-server https certification reload
- > sudo certbot certonly --nginx
- > sudo service nginx restart

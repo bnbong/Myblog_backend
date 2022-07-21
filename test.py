@@ -73,7 +73,6 @@ class Markdown_Test(unittest.TestCase):
 
     def test_is_double_markdown_function_work(self):
         # it working! double converting does not matter the text form.
-
         converted_text = markdown.markdown(self.markdown_text)
 
         self.assertEqual('<h2>👋 Hello world! - 한양대학교 ERICA 소프트웨어학부 19학번 (2019.03.02 ~ )</h2>', converted_text)
