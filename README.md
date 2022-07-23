@@ -1,7 +1,7 @@
 # Myblog_backend
 backend-side of blog project wriiten with Python Flask
 
- - Blog page [Link](https://bnbong.pythonanywhere.com/)
+ - Blog page [Link](https://bnbong.tk/)
 
 ## venv activate
  > source .venv/bin/activate
