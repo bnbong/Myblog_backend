@@ -42,27 +42,3 @@ def postview(post_id):
     selected_post = Post.query.filter_by(id=post_id).first()
 
     return render_template('postview.html', post=selected_post)
-
-# @app.route('/create/', methods=('GET', 'POST'))
-# def create():
-
-#     if request.method == 'POST':
-#         title = request.form['title']
-#         content = request.form['content']
-#         content = markdown.markdown(content)
-
-#         if not title:
-#             flash('Title is required!')
-#             return redirect(url_for('index'))
-
-#         if not content:
-#             flash('Content is required!')
-#             return redirect(url_for('index'))
-
-#         new_post = Post(title=title, content=content)
-#         db.session.add(new_post)
-#         db.session.commit()
-
-#         return redirect(url_for('index'))
-
-#     return render_template('create.html')
